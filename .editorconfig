@@ -1,0 +1,21 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{js,ts,jsx,tsx,cjs,mjs,json,svelte,css,scss,html,md,yml,yaml}]
+indent_style = space
+indent_size = 2
+max_line_length = 80
+
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+[{package-lock.json,pnpm-lock.yaml,yarn.lock}]
+indent_style = space
+indent_size = 2
+insert_final_newline = false
