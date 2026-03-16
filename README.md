@@ -13,6 +13,7 @@ This template embraces the **shift-left** methodology—integrating quality gate
 ```
 ├── 📁 .claude
 │   ├── 📁 rules
+│   │   ├── 📝 clean-architecture.md
 │   │   ├── 📝 coding-conventions.md
 │   │   ├── 📝 svelte-standards.md
 │   │   └── 📝 typescript-standards.md
@@ -40,7 +41,18 @@ This template embraces the **shift-left** methodology—integrating quality gate
 │   │   │       ├── 📁 label
 │   │   │       └── 📁 pagination
 │   │   ├── 📁 data
+│   │   ├── 📁 domain
+│   │   │   ├── 📁 models
+│   │   │   │   └── 📄 book.ts
+│   │   │   └── 📁 types
+│   │   │       └── 📄 database.types.ts
+│   │   ├── 📁 schemas
+│   │   │   └── 📄 book.schema.ts
 │   │   ├── 📁 server
+│   │   │   ├── 📁 repositories
+│   │   │   │   └── 📄 books.repository.ts
+│   │   │   ├── 📁 services
+│   │   │   │   └── 📄 books.service.ts
 │   │   │   └── 📄 auth.ts
 │   │   ├── 📄 axios.ts
 │   │   ├── 📄 env.ts
@@ -67,6 +79,9 @@ This template embraces the **shift-left** methodology—integrating quality gate
 │   ├── 🌐 app.html
 │   ├── 📄 hooks.client.ts
 │   └── 📄 hooks.server.ts
+├── 📁 supabase
+│   └── 📁 migrations
+│       └── 📄 20260316114311_create_books_table.sql
 ├── 📁 static
 │   └── 🖼️ favicon.svg
 ├── ⚙️ .editorconfig
@@ -87,6 +102,112 @@ This template embraces the **shift-left** methodology—integrating quality gate
 ├── ⚙️ tsconfig.json
 └── 📄 vite.config.ts
 ```
+
+## Supabase Architecture
+
+This template uses **Supabase** (Postgres + Row Level Security) as its backend, wired through a **clean architecture** pattern with strict layer boundaries.
+
+### Layered Architecture
+
+```mermaid
+flowchart TD
+    Route["+page.server.ts\nLoad & Form Actions"]
+    Service["BooksService\nBusiness logic"]
+    Repo["BooksRepository\nData access"]
+    Domain["Domain Models\nSupabase-generated types"]
+    DB["Supabase\nPostgres + RLS"]
+
+    Route --> Service --> Repo --> Domain --> DB
+```
+
+| Layer | Location | Responsibility |
+|-------|----------|----------------|
+| **Domain** | `src/lib/domain/` | Type definitions derived from Supabase-generated `database.types.ts` |
+| **Schemas** | `src/lib/schemas/` | Zod validation schemas for form input |
+| **Repository** | `src/lib/server/repositories/` | Data access — wraps Supabase query builder |
+| **Service** | `src/lib/server/services/` | Business logic and orchestration |
+| **Route** | `src/routes/` | SvelteKit load functions and form actions |
+
+### Dependency Injection via Hooks
+
+All dependencies are instantiated **per-request** in `hooks.server.ts` and injected through `event.locals`:
+
+```
+hooks.server.ts
+  └─ createServerClient()          → event.locals.supabase
+     └─ new BooksRepository(supabase)  → event.locals.booksRepository
+        └─ new BooksService(repository)  → event.locals.booksService
+```
+
+Route handlers access services directly from `locals` — no manual wiring needed:
+
+```ts
+// +page.server.ts
+export const load: PageServerLoad = async ({ locals }) => {
+  const books = await locals.booksRepository.getAll();
+  return { books };
+};
+```
+
+### Request Flow (Example: Create a Book)
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant PageServer as page.server.ts
+    participant BooksService
+    participant BooksRepository
+    participant Supabase
+
+    Browser->>PageServer: POST /books?/create
+    PageServer->>PageServer: Validate with Zod schema
+    PageServer->>BooksService: createBook(data)
+    BooksService->>BooksService: Business validation
+    BooksService->>BooksRepository: create(data)
+    BooksRepository->>Supabase: INSERT via query builder
+    Supabase-->>BooksRepository: Book row
+    BooksRepository-->>BooksService: Book
+    BooksService-->>PageServer: Book
+    PageServer-->>Browser: Updated page
+```
+
+### Database Migrations
+
+SQL migrations live in `supabase/migrations/` and include **Row Level Security** policies:
+
+```sql
+CREATE TABLE IF NOT EXISTS public.books (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  author TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.books ENABLE ROW LEVEL SECURITY;
+```
+
+### Adding a New Entity
+
+To add a new Supabase-backed entity (e.g., `authors`), follow this checklist:
+
+1. **Migration** — Create a SQL migration in `supabase/migrations/` with the table and RLS policies
+2. **Types** — Regenerate `database.types.ts` with `supabase gen types typescript`
+3. **Domain model** — Add types in `src/lib/domain/models/` derived from the generated types
+4. **Schema** — Add Zod schemas in `src/lib/schemas/` for form validation
+5. **Repository** — Add a repository class in `src/lib/server/repositories/`
+6. **Service** — Add a service class in `src/lib/server/services/`
+7. **Hooks** — Wire repository and service into `event.locals` in `hooks.server.ts`
+8. **Type declaration** — Update `App.Locals` in `src/app.d.ts`
+9. **Route** — Create the SvelteKit route with load function, actions, and components
+
+### Path Aliases
+
+| Alias | Path | Purpose |
+|-------|------|---------|
+| `$domain/*` | `src/lib/domain/*` | Types and domain models |
+| `$schemas/*` | `src/lib/schemas/*` | Zod validation schemas |
+| `$server/*` | `src/lib/server/*` | Repositories, services, auth |
+| `$components/*` | `src/lib/components/*` | Reusable UI components |
 
 ## AI-Assisted Development (`.claude/`)
 
@@ -143,6 +264,9 @@ flowchart LR
 - SvelteKit
 - TypeScript
 - Vite
+
+**Backend**
+- Supabase (Postgres, Row Level Security, SSR auth)
 
 **Styling**
 - Tailwind CSS v4
@@ -217,10 +341,17 @@ E2E tests collect V8 code coverage using Playwright's built-in coverage API and 
 
 ## Environment Variables
 
-Create a `.env` file with the following variables:
+Copy `.env.dist` to `.env` and fill in the values:
 
 ```
+# Supabase
+PUBLIC_SUPABASE_URL=your-supabase-project-url
+PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+
+# API
 VITE_API_BASE_URL=your-base-api
+
+# Sentry
 VITE_SENTRY_DSN=your-sentry-dsn
 SENTRY_DSN=your-sentry-dsn
 SENTRY_ORG=your-sentry-org
