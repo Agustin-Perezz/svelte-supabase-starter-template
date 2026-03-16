@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -7,13 +7,7 @@ const config = {
   preprocess: vitePreprocess(),
 
   kit: {
-    adapter: adapter({
-      pages: 'build',
-      assets: 'build',
-      fallback: '200.html',
-      precompress: false,
-      strict: true
-    }),
+    adapter: adapter(),
 
     alias: {
       $lib: resolve('./src/lib'),
@@ -21,7 +15,11 @@ const config = {
       $components: resolve('./src/lib/components'),
       '$components/*': resolve('./src/lib/components/*'),
       $schemas: resolve('./src/lib/schemas'),
-      '$schemas/*': resolve('./src/lib/schemas/*')
+      '$schemas/*': resolve('./src/lib/schemas/*'),
+      $domain: resolve('./src/lib/domain'),
+      '$domain/*': resolve('./src/lib/domain/*'),
+      $server: resolve('./src/lib/server'),
+      '$server/*': resolve('./src/lib/server/*')
     }
   }
 };
