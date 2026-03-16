@@ -46,17 +46,16 @@ This template embraces the **shift-left** methodology—integrating quality gate
 │   │   ├── 📄 env.ts
 │   │   └── 📄 utils.ts
 │   ├── 📁 routes
-│   │   ├── 📁 pokemons
+│   │   ├── 📁 books
 │   │   │   ├── 📁 components
-│   │   │   │   ├── 📄 PokemonCard.svelte
-│   │   │   │   ├── 📄 PokemonEmptyState.svelte
-│   │   │   │   ├── 📄 PokemonGrid.svelte
-│   │   │   │   └── 📄 PokemonSearchBar.svelte
-│   │   │   ├── 📁 types
-│   │   │   │   └── 📄 pokemon.ts
+│   │   │   │   ├── 📄 BookCreateForm.svelte
+│   │   │   │   ├── 📄 BookEmptyState.svelte
+│   │   │   │   ├── 📄 BookFormError.svelte
+│   │   │   │   ├── 📄 BookList.svelte
+│   │   │   │   └── 📄 BookListItem.svelte
 │   │   │   ├── 📄 +page.server.ts
 │   │   │   ├── 📄 +page.svelte
-│   │   │   └── 📄 pokemonsPage.svelte.ts
+│   │   │   └── 📄 booksPage.svelte.ts
 │   │   ├── 📁 protected
 │   │   │   ├── 📄 +page.server.ts
 │   │   │   └── 📄 +page.svelte

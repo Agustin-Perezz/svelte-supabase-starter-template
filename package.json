@@ -15,7 +15,8 @@
     "test:e2e": "playwright test",
     "test": "npm run test:e2e",
     "test:show-report": "npx monocart show-report ./coverage/e2e/monocart-report.html",
-    "coverage:show-report": "npx monocart show-report ./coverage/e2e/v8/index.html"
+    "coverage:show-report": "npx monocart show-report ./coverage/e2e/v8/index.html",
+    "supabase:gen-types": "supabase gen types typescript --project-id=$SUPABASE_PROJECT_ID > src/lib/domain/types/database.types.ts"
   },
   "devDependencies": {
     "@eslint/compat": "^2.0.2",
@@ -67,6 +68,8 @@
   },
   "dependencies": {
     "@sentry/sveltekit": "^10.38.0",
+    "@supabase/ssr": "^0.9.0",
+    "@supabase/supabase-js": "^2.99.1",
     "axios": "^1.13.5",
     "svelte-french-toast": "^1.2.0",
     "sveltekit-superforms": "^2.29.1",
