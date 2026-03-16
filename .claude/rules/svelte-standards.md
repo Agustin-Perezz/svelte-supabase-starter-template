@@ -26,11 +26,11 @@ NEVER destructure `$props()` or pass values directly into constructors at the to
 
 ```ts
 // BAD — loses reactivity
-const { pokemon } = data;
+const { books } = data;
 const detail = new MyClass(data.foo);
 
 // GOOD
-const pokemon = $derived(data.pokemon);
+const books = $derived(data.books);
 const detail = $derived(new MyClass(data.foo));
 ```
 
@@ -54,7 +54,7 @@ Every new SvelteKit page MUST be decomposed into three layers:
 - A sub-component MUST NOT exceed **~50 lines of template markup**. If it does, split it. Aim for 10–20 lines per component.
 - NEVER combine unrelated UI sections into a single sub-component (e.g., a `UserInfo.svelte` that also renders a stats table).
 - Sub-components receive only the specific primitive props or slices they need — never the full page data object.
-- Name sub-components after the UI concern they own (e.g., `PokemonStats.svelte`, `PokemonAbilities.svelte`), not generic names like `Section.svelte`.
+- Name sub-components after the UI concern they own (e.g., `BookList.svelte`, `BookCreateForm.svelte`), not generic names like `Section.svelte`.
 - If a sub-component contains conditional rendering for multiple states (loading, error, empty, populated), extract each state into its own sub-component.
 
 **Layer 3 — `+page.svelte` (pure orchestration)**

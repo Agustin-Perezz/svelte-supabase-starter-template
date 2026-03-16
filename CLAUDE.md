@@ -33,7 +33,7 @@ Every code change passes through layered quality gates:
 
 - `/` — Home page
 - `/protected` — Server-guarded page with `+page.server.ts` auth logic
-- `/pokemon/[id]` — Dynamic route (scaffold)
+- `/books` — Books CRUD with Supabase
 - `/images` — Image route (scaffold)
 
 ### Key Libraries

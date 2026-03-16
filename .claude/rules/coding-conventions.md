@@ -13,10 +13,10 @@ Always use braces for `if` statements — never place `return` on the same line 
 
 ```ts
 // BAD — inline return
-if (!query) return this.pokemons;
+if (!query) return this.books;
 
 // GOOD — explicit block
 if (!query) {
-  return this.pokemons;
+  return this.books;
 }
 ```
