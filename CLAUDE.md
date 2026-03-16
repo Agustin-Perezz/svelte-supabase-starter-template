@@ -20,4 +20,4 @@ Svelte 5, SOLID principles, and TypeScript standards are enforced via scoped rul
 
 - `svelte-standards.md` — Runes API, SvelteKit patterns, SOLID principles (activates on `*.svelte`, `*.svelte.ts`)
 - `typescript-standards.md` — `satisfies`, type guards, strict rules (activates on `*.ts`, `*.svelte.ts`)
-- `clean-architecture.md` — Domain/use-case layer boundaries (activates on `src/domain/**`, `src/use-cases/**`)
+- `server-supabase.md` — Supabase clean architecture: repository/service layers, hooks wiring (activates on `src/lib/server/**`, `src/routes/**/+page.server.ts`, `src/hooks.server.ts`)
