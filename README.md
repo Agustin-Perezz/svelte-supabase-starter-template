@@ -154,21 +154,21 @@ export const load: PageServerLoad = async ({ locals }) => {
 ```mermaid
 sequenceDiagram
     participant Browser
-    participant +page.server.ts
+    participant PageServer as page.server.ts
     participant BooksService
     participant BooksRepository
     participant Supabase
 
-    Browser->>+page.server.ts: POST /books?/create
-    +page.server.ts->>+page.server.ts: Validate with Zod schema
-    +page.server.ts->>BooksService: createBook(data)
+    Browser->>PageServer: POST /books?/create
+    PageServer->>PageServer: Validate with Zod schema
+    PageServer->>BooksService: createBook(data)
     BooksService->>BooksService: Business validation
     BooksService->>BooksRepository: create(data)
     BooksRepository->>Supabase: INSERT via query builder
     Supabase-->>BooksRepository: Book row
     BooksRepository-->>BooksService: Book
-    BooksService-->>+page.server.ts: Book
-    +page.server.ts-->>Browser: Updated page
+    BooksService-->>PageServer: Book
+    PageServer-->>Browser: Updated page
 ```
 
 ### Database Migrations
