@@ -1,5 +1,11 @@
-import type { Book, BookInsert, BookUpdate } from '$domain/models/book';
+import { BookMapper } from '$domain/mappers/book.mapper';
+import type { Book } from '$domain/models/book';
+import type { bookCreateSchema, bookUpdateSchema } from '$schemas/book.schema';
 import type { BooksRepository } from '$server/repositories/books.repository';
+import type { z } from 'zod';
+
+type CreateDTO = z.infer<typeof bookCreateSchema>;
+type UpdateDTO = Omit<z.infer<typeof bookUpdateSchema>, 'id'>;
 
 export class BooksService {
   private readonly repository: BooksRepository;
@@ -12,20 +18,14 @@ export class BooksService {
     return this.repository.getAll();
   }
 
-  async createBook(data: BookInsert): Promise<Book> {
-    if (!data.title.trim()) {
-      throw new Error('Title is required');
-    }
-
-    if (!data.author.trim()) {
-      throw new Error('Author is required');
-    }
-
-    return this.repository.create(data);
+  async createBook(dto: CreateDTO): Promise<Book> {
+    const insert = BookMapper.fromDtoToInsertEntity(dto);
+    return this.repository.create(insert);
   }
 
-  async updateBook(id: string, data: BookUpdate): Promise<Book> {
-    return this.repository.update(id, data);
+  async updateBook(id: string, dto: UpdateDTO): Promise<Book> {
+    const update = BookMapper.fromDtoToUpdateEntity(dto);
+    return this.repository.update(id, update);
   }
 
   async deleteBook(id: string): Promise<void> {
