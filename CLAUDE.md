@@ -12,6 +12,8 @@
 
 Uses **sveltekit-superforms** with **Zod** schemas for validation. Form components in `$components/ui/form-field/` handle error display automatically.
 
+**Always use shadcn-svelte UI components** (from `$components/ui/`) instead of native HTML form elements. For example, use `<Input>` over `<input>`, `<Button>` over `<button>`, `<Select>` over `<select>`, etc. Never use raw HTML form elements when a shadcn equivalent exists.
+
 ---
 
 ## Coding Standards
