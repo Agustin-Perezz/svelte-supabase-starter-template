@@ -51,15 +51,19 @@ Describe key design choices: data flow, component boundaries, state management a
 A numbered, actionable checklist grouped by layer. Each item maps to a specific file or concern. **Omit any section that does not apply.**
 
 #### Backend (Domain, Repository, Service, Hooks, Schemas)
+
 - [ ] ...
 
 #### Server Routes (`+page.server.ts`)
+
 - [ ] ...
 
 #### UI (State class, sub-components, page orchestration)
+
 - [ ] ...
 
 #### Type Declarations (`app.d.ts`)
+
 - [ ] ...
 
 ---

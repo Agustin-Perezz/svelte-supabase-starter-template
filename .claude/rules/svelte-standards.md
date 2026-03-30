@@ -23,6 +23,7 @@ globs:
   let { id, title, author }: Props = $props();
 </script>
 ```
+
 - Extract logic into `.svelte.ts` files using runes to keep components lean and testable.
 
 ## SvelteKit Patterns
