@@ -10,7 +10,20 @@ globs:
 
 - Use `$state()` for reactive data and `$derived()` for computed values. Abandon Svelte 4's `let` and `$:`.
 - Use `$effect` only for side effects (DOM manipulation, third-party libs). Never use it to sync state.
-- Use `let { prop } = $props()`. Use `$bindable()` only when two-way binding is strictly necessary.
+- Define an explicit `Props` interface and destructure `$props()` with it. Use `$bindable()` only when two-way binding is strictly necessary.
+
+```svelte
+<script lang="ts">
+  interface Props {
+    id: string;
+    title: string;
+    author: string;
+  }
+
+  let { id, title, author }: Props = $props();
+</script>
+```
+
 - Extract logic into `.svelte.ts` files using runes to keep components lean and testable.
 
 ## SvelteKit Patterns

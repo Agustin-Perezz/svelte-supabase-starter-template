@@ -20,3 +20,19 @@ if (!query) {
   return this.books;
 }
 ```
+
+## No Duplicated Utility Functions
+
+Never duplicate helper/utility functions across files. If a function is used in more than one place, extract it into a shared utility module in `$lib/utils/` and import it where needed.
+
+```ts
+// BAD — same buildHref function in multiple files
+// file-a.svelte.ts
+function buildHref(params: Record<string, string>) { ... }
+// file-b.svelte.ts
+function buildHref(params: Record<string, string>) { ... }
+
+// GOOD — single source of truth
+// $lib/utils/url.ts
+export function buildHref(params: Record<string, string>) { ... }
+```

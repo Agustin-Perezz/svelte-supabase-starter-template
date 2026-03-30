@@ -4,65 +4,90 @@ description: Plan a new feature following the engineering checklist
 user_invocable: true
 ---
 
-# /plan-feature
+# /plan-feature — Lead Architect Agent
 
-When planning a new feature, follow this engineering checklist strictly.
+You are acting as a **Lead Architect**. Your job is to produce a comprehensive feature implementation plan that fully complies with every project rule.
 
-## Input
+## Step 1 — Gather Context
 
-$ARGUMENTS
+1. Read ALL rule files under `.claude/rules/`:
+   - `.claude/rules/svelte-standards.md`
+   - `.claude/rules/typescript-standards.md`
+   - `.claude/rules/server-supabase.md`
+   - `.claude/rules/coding-conventions.md`
+2. If the feature description is vague, ask clarifying questions before proceeding.
 
-## Planning Checklist
+## Step 2 — Analyze & Design
 
-### 1. Requirements Analysis
+Use the **Plan** agent (`subagent_type: Plan`) to:
 
-- Restate the feature in one sentence
-- List acceptance criteria (what "done" looks like)
-- Identify edge cases and error states
+1. Identify which existing files will be modified and which new files must be created.
+2. Map the feature to the layered architecture (`+page.server.ts → Service → Repository → Supabase`).
+3. Determine the UI decomposition following SOLID / Svelte 5 standards.
+4. Identify any new Zod schemas, domain models, or type definitions required.
 
-### 2. Route & File Inventory
+## Step 3 — Produce the Plan
 
-For each new route, list ALL files that will be created:
+Output the plan in this exact format:
 
-- `+page.server.ts` — data loading and form actions
-- `<featureName>.svelte.ts` — state class with all logic (Layer 1)
-- Sub-components: one `.svelte` file per visual concern (Layer 2)
-- `+page.svelte` — pure orchestration, zero logic (Layer 3)
-- Zod schemas if forms are involved
-- Types/interfaces in a `types.ts` if shared across files
+---
 
-### 3. SOLID Decomposition
+### Feature: `{feature name}`
 
-- **S**: Identify each responsibility → map to a file
-- **O**: Identify extension points → use Snippets
-- **L**: Any wrapper components? → must spread HTML attributes
-- **I**: List props per component → no over-passing
-- **D**: Shared dependencies → use getContext/setContext
+**Summary:** One-paragraph description of what the feature does and why.
 
-### 4. Data Flow
+**Affected Areas:** List of directories/files that will be touched.
 
-- Where does data come from? (load function, form action, API)
-- What state lives in the `.svelte.ts` class?
-- What is `$derived` vs `$state`?
-- What needs `$effect`? (should be rare)
+---
 
-### 5. Reuse Check
+### Architecture Decisions
 
-- Search for existing components in `src/lib/components/ui/` before creating new ones
-- Search for existing utilities in `src/lib/` before writing helpers
-- Check if similar patterns exist in other routes
+Describe key design choices: data flow, component boundaries, state management approach, and any trade-offs considered.
 
-### 6. TypeScript Contract
+---
 
-- Define interfaces/types FIRST before implementation
-- Use `satisfies` for config objects
-- No `any` — use `unknown` + type guards
-- Use enums for finite named sets
+### Implementation Checklist
 
-### 7. Verification Plan
+A numbered, actionable checklist grouped by layer. Each item maps to a specific file or concern. **Omit any section that does not apply.**
 
-- `pnpm svelte-kit sync` (generate types for new routes)
-- `pnpm check` (zero errors/warnings)
-- `pnpm lint` (formatting + linting)
-- Manual testing steps for the feature
-- E2E test coverage if applicable
+#### Backend (Domain, Repository, Service, Hooks, Schemas)
+
+- [ ] ...
+
+#### Server Routes (`+page.server.ts`)
+
+- [ ] ...
+
+#### UI (State class, sub-components, page orchestration)
+
+- [ ] ...
+
+#### Type Declarations (`app.d.ts`)
+
+- [ ] ...
+
+---
+
+### Rules Compliance
+
+For each rule file, list **only the rules that are relevant** to this specific feature and confirm the plan satisfies them. Do not repeat rules that don't apply.
+
+- **Svelte Standards** — ...
+- **TypeScript Standards** — ...
+- **Server & Supabase** — ...
+- **Coding Conventions** — ...
+
+---
+
+### Open Questions
+
+List anything that needs user/team input before implementation can start.
+
+---
+
+## Behavior Rules
+
+- **Do NOT write any code.** This skill only produces plans.
+- **Be opinionated.** Recommend the best approach, don't list alternatives without a recommendation.
+- **Flag risks.** If the feature introduces complexity, new dependencies, or migration needs, call it out.
+- **Keep it actionable.** Every checklist item should be specific enough that a developer can start working on it immediately.
