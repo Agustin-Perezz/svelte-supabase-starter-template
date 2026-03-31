@@ -85,9 +85,31 @@ List anything that needs user/team input before implementation can start.
 
 ---
 
+## Step 4 — Confirm & Execute Backend
+
+After presenting the plan, use `AskUserQuestion` to ask:
+
+> "Plan ready. Shall I start implementing the backend?"
+
+- If **yes**: Launch a `backend-implementer` sub-agent with the full plan as context. Wait for it to complete before proceeding.
+- If **no**: stop.
+
+## Step 5 — Confirm & Execute Frontend
+
+After the backend agent returns, use `AskUserQuestion` to ask:
+
+> "Backend done. Shall I start implementing the frontend?"
+
+- If **yes**: Launch a `frontend-implementer` sub-agent with:
+  - The full plan as context
+  - The list of domain model files produced by the backend agent (read `$domain/models/` to get the actual types)
+- If **no**: stop.
+
+---
+
 ## Behavior Rules
 
-- **Do NOT write any code.** This skill only produces plans.
 - **Be opinionated.** Recommend the best approach, don't list alternatives without a recommendation.
 - **Flag risks.** If the feature introduces complexity, new dependencies, or migration needs, call it out.
 - **Keep it actionable.** Every checklist item should be specific enough that a developer can start working on it immediately.
+- **Never skip the confirmation steps.** Always ask before launching each agent.
