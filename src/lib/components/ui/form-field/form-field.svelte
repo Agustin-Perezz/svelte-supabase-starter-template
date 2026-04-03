@@ -4,8 +4,6 @@
     HTMLInputTypeAttribute
   } from 'svelte/elements';
 
-  import type { WithElementRef } from '$lib/utils.js';
-
   type InputType = Exclude<HTMLInputTypeAttribute, 'file'>;
 
   export type FormFieldProps = WithElementRef<
@@ -21,7 +19,7 @@
 <script lang="ts">
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
-  import { cn } from '$lib/utils.js';
+  import { cn, type WithElementRef } from '$lib/utils.js';
 
   let {
     ref = $bindable(null),
