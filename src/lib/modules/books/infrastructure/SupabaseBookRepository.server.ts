@@ -1,5 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Book, BookInsert, BookUpdate } from '$modules/books/domain/Book';
+import type {
+  Book,
+  BookEntityInsert,
+  BookEntityUpdate
+} from '$modules/books/domain/Book';
 import type { IBookRepository } from '$modules/books/domain/IBookRepository';
 import type { Database } from '$modules/shared/domain/database.types';
 
@@ -39,7 +43,7 @@ export class SupabaseBookRepository implements IBookRepository {
     return BookMapper.fromEntityToBook(data);
   }
 
-  async create(book: BookInsert): Promise<Book> {
+  async create(book: BookEntityInsert): Promise<Book> {
     const { data, error } = await this.supabase
       .from('books')
       .insert(book)
@@ -53,7 +57,7 @@ export class SupabaseBookRepository implements IBookRepository {
     return BookMapper.fromEntityToBook(data);
   }
 
-  async update(id: string, book: BookUpdate): Promise<Book> {
+  async update(id: string, book: BookEntityUpdate): Promise<Book> {
     const { data, error } = await this.supabase
       .from('books')
       .update(book)
