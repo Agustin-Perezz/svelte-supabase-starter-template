@@ -35,7 +35,7 @@ const supabase = createServerClient(
 
 SQL migrations live in `supabase/migrations/`. Filenames follow the pattern `{timestamp}_{description}.sql`.
 
-```
+````
 
 ### Row Level Security (RLS)
 
@@ -52,7 +52,7 @@ TypeScript types are auto-generated from the Supabase schema:
 
 ```bash
 pnpm supabase:gen-types
-```
+````
 
 This command outputs to `src/lib/domain/types/database.types.ts` and provides:
 
