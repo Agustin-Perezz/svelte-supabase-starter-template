@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Book } from '$domain/models/book';
+  import type { Book } from '$modules/books/domain/Book';
 
   import BookListItem from './BookListItem.svelte';
 
