@@ -63,18 +63,22 @@ The root layout (`+layout.svelte`) wraps all pages:
 
 ### Load Functions
 
-Load functions fetch data before the page renders:
+Load functions fetch data before the page renders. Repositories and use cases are instantiated per-request:
 
 ```ts
 // src/routes/books/+page.server.ts
-import { bookCreateSchema } from '$schemas/book.schema';
+import { bookCreateSchema } from '$modules/books/domain/BookSchemas';
+import { SupabaseBookRepository } from '$modules/books/infrastructure/SupabaseBookRepository.server';
+import { GetAllBooks } from '$modules/books/useCases/GetAllBooks';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-  const books = await locals.booksRepository.getAll();
+  const repository = new SupabaseBookRepository(locals.supabase);
+  const getAllBooks = new GetAllBooks(repository);
+  const books = await getAllBooks.execute();
   const createForm = await superValidate(zod(bookCreateSchema));
   return { books, createForm };
 };
@@ -86,7 +90,9 @@ Form actions handle mutations via POST requests:
 
 ```ts
 import { fail } from '@sveltejs/kit';
-import { bookCreateSchema } from '$schemas/book.schema';
+import { bookCreateSchema } from '$modules/books/domain/BookSchemas';
+import { SupabaseBookRepository } from '$modules/books/infrastructure/SupabaseBookRepository.server';
+import { CreateBook } from '$modules/books/useCases/CreateBook';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
@@ -100,7 +106,9 @@ export const actions: Actions = {
     }
 
     try {
-      await locals.booksService.createBook(form.data);
+      const repository = new SupabaseBookRepository(locals.supabase);
+      const createBook = new CreateBook(repository);
+      await createBook.execute(form.data);
       return message(form, 'Book created successfully');
     } catch {
       return message(form, 'Failed to create book', { status: 500 });
@@ -123,7 +131,7 @@ Pages follow a three-layer decomposition:
 
 ```ts
 // booksPage.svelte.ts
-import type { Book } from '$domain/models/book';
+import type { Book } from '$modules/books/domain/Book';
 
 export class BooksPageState {
   books = $state<Book[]>([]);
@@ -222,7 +230,7 @@ Forms use `sveltekit-superforms` with Zod schemas:
 
 ```svelte
 <script lang="ts">
-  import { bookCreateSchema } from '$schemas/book.schema';
+  import { bookCreateSchema } from '$modules/books/domain/BookSchemas';
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
 

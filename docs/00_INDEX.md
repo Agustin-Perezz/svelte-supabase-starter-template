@@ -23,6 +23,12 @@ graph TB
         Hooks["hooks.server.ts"]
     end
 
+    subgraph Modules["Feature Modules (src/lib/modules/)"]
+        Domain["domain/ — Entities, Interfaces, Schemas"]
+        UseCases["useCases/ — Application logic"]
+        Infra["infrastructure/ — Repositories, Mappers"]
+    end
+
     subgraph Supabase["Supabase Backend"]
         Auth["Auth / OAuth"]
         DB["PostgreSQL + RLS"]
@@ -31,7 +37,11 @@ graph TB
     UI --> Routes
     Forms --> Routes
     Routes --> Server
-    Server --> Hooks
+    Server --> UseCases
+    UseCases --> Domain
+    UseCases --> Infra
+    Infra --> Domain
+    Infra --> DB
     Hooks --> Auth
     Hooks --> DB
 ```
@@ -70,13 +80,11 @@ See [Architecture Overview](./01_ARCHITECTURE.md) for detailed diagrams and patt
 
 ## Path Aliases
 
-| Alias           | Path                   | Purpose                                |
-| --------------- | ---------------------- | -------------------------------------- |
-| `$lib`          | `src/lib`              | Base library alias (SvelteKit default) |
-| `$components/*` | `src/lib/components/*` | Reusable UI components                 |
-| `$schemas/*`    | `src/lib/schemas/*`    | Zod validation schemas                 |
-| `$domain/*`     | `src/lib/domain/*`     | Types, models, mappers                 |
-| `$server/*`     | `src/lib/server/*`     | Repositories, services, auth           |
+| Alias           | Path                   | Purpose                                            |
+| --------------- | ---------------------- | -------------------------------------------------- |
+| `$lib`          | `src/lib`              | Base library alias (SvelteKit default)             |
+| `$components/*` | `src/lib/components/*` | Reusable UI components                             |
+| `$modules/*`    | `src/lib/modules/*`    | Feature modules (domain, infrastructure, useCases) |
 
 ## Technology Stack
 

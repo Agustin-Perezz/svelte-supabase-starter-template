@@ -159,16 +159,26 @@ interface Props {
 
 ### Dependency Inversion
 
-Use `getContext`/`setContext` (wrapped in type-safe helpers) to inject dependencies:
+Use `getContext`/`setContext` (wrapped in type-safe helpers) to inject dependencies across component trees:
 
 ```ts
 // Provider
-// Consumer
 import { getContext, setContext } from 'svelte';
 
-setContext('booksService', service);
+setContext('booksRepository', repository);
 
-const service = getContext<BooksService>('booksService');
+// Consumer
+const repository = getContext<IBookRepository>('booksRepository');
+```
+
+In server code, repositories and use cases are instantiated in `+page.server.ts` with the Supabase client from `locals`:
+
+```ts
+import { SupabaseBookRepository } from '$modules/books/infrastructure/SupabaseBookRepository.server';
+import { CreateBook } from '$modules/books/useCases/CreateBook';
+
+const repository = new SupabaseBookRepository(locals.supabase);
+const createBook = new CreateBook(repository);
 ```
 
 ## Form Handling
