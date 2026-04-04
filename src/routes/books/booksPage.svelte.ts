@@ -1,4 +1,4 @@
-import type { Book } from '$domain/models/book';
+import type { Book } from '$modules/books/domain/Book';
 
 export class BooksPageState {
   books = $state<Book[]>([]);

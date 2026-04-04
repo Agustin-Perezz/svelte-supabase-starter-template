@@ -14,12 +14,8 @@ const config = {
       '$lib/*': resolve('./src/lib/*'),
       $components: resolve('./src/lib/components'),
       '$components/*': resolve('./src/lib/components/*'),
-      $schemas: resolve('./src/lib/schemas'),
-      '$schemas/*': resolve('./src/lib/schemas/*'),
-      $domain: resolve('./src/lib/domain'),
-      '$domain/*': resolve('./src/lib/domain/*'),
-      $server: resolve('./src/lib/server'),
-      '$server/*': resolve('./src/lib/server/*')
+      $modules: resolve('./src/lib/modules'),
+      '$modules/*': resolve('./src/lib/modules/*')
     }
   }
 };

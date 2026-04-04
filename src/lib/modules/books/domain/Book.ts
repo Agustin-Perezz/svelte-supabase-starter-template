@@ -1,4 +1,4 @@
-import type { Database } from '$domain/types/database.types';
+import type { Database } from '$modules/shared/domain/database.types';
 
 export type Book = Database['public']['Tables']['books']['Row'];
 export type BookInsert = Database['public']['Tables']['books']['Insert'];

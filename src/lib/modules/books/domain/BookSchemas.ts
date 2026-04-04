@@ -14,3 +14,6 @@ export const bookUpdateSchema = z.object({
 export const bookDeleteSchema = z.object({
   id: z.string().min(1, 'Book ID is required')
 });
+
+export type CreateBookDTO = z.infer<typeof bookCreateSchema>;
+export type UpdateBookDTO = Omit<z.infer<typeof bookUpdateSchema>, 'id'>;

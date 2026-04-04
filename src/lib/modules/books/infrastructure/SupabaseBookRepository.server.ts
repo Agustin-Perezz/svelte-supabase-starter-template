@@ -1,9 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { BookMapper } from '$domain/mappers/book.mapper';
-import type { Book, BookInsert, BookUpdate } from '$domain/models/book';
-import type { Database } from '$domain/types/database.types';
+import type { Book, BookInsert, BookUpdate } from '$modules/books/domain/Book';
+import type { IBookRepository } from '$modules/books/domain/IBookRepository';
+import type { Database } from '$modules/shared/domain/database.types';
 
-export class BooksRepository {
+import { BookMapper } from './mappers/BookMapper';
+
+export class SupabaseBookRepository implements IBookRepository {
   private readonly supabase: SupabaseClient<Database>;
 
   constructor(supabase: SupabaseClient<Database>) {
@@ -20,7 +22,7 @@ export class BooksRepository {
       throw error;
     }
 
-    return BookMapper.fromEntitiesToBooks(data as Book[]);
+    return BookMapper.fromEntitiesToBooks(data);
   }
 
   async getById(id: string): Promise<Book> {
@@ -34,7 +36,7 @@ export class BooksRepository {
       throw error;
     }
 
-    return BookMapper.fromEntityToBook(data as Book);
+    return BookMapper.fromEntityToBook(data);
   }
 
   async create(book: BookInsert): Promise<Book> {
@@ -48,7 +50,7 @@ export class BooksRepository {
       throw error;
     }
 
-    return BookMapper.fromEntityToBook(data as Book);
+    return BookMapper.fromEntityToBook(data);
   }
 
   async update(id: string, book: BookUpdate): Promise<Book> {
@@ -63,7 +65,7 @@ export class BooksRepository {
       throw error;
     }
 
-    return BookMapper.fromEntityToBook(data as Book);
+    return BookMapper.fromEntityToBook(data);
   }
 
   async delete(id: string): Promise<void> {

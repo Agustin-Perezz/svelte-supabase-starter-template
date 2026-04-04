@@ -1,6 +1,6 @@
 <script lang="ts">
   import { FormField } from '$components/ui/form-field';
-  import { bookCreateSchema } from '$schemas/book.schema';
+  import { bookCreateSchema } from '$modules/books/domain/BookSchemas';
   import {
     superForm,
     type Infer,
