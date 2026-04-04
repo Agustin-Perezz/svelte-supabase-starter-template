@@ -1,9 +1,9 @@
-import type { Book, BookInsert, BookUpdate } from './Book';
+import type { Book, BookEntityInsert, BookEntityUpdate } from './Book';
 
 export interface IBookRepository {
   getAll(): Promise<Book[]>;
   getById(_id: string): Promise<Book>;
-  create(_book: BookInsert): Promise<Book>;
-  update(_id: string, _book: BookUpdate): Promise<Book>;
+  create(_book: BookEntityInsert): Promise<Book>;
+  update(_id: string, _book: BookEntityUpdate): Promise<Book>;
   delete(_id: string): Promise<void>;
 }

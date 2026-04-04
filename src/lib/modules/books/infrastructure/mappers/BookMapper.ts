@@ -1,34 +1,39 @@
-import type { Book, BookInsert, BookUpdate } from '$modules/books/domain/Book';
+import type {
+  Book,
+  BookEntity,
+  BookEntityInsert,
+  BookEntityUpdate
+} from '$modules/books/domain/Book';
 import type {
   CreateBookDTO,
   UpdateBookDTO
 } from '$modules/books/domain/BookSchemas';
 
 export class BookMapper {
-  static fromEntitiesToBooks(rows: Book[]): Book[] {
+  static fromEntitiesToBooks(rows: BookEntity[]): Book[] {
     return rows.map((row) => BookMapper.fromEntityToBook(row));
   }
 
-  static fromEntityToBook(row: Book): Book {
+  static fromEntityToBook(entity: BookEntity): Book {
     return {
-      id: row.id,
-      title: row.title,
-      author: row.author,
-      created_at: row.created_at
+      id: entity.id,
+      title: entity.title,
+      author: entity.author,
+      createdAt: entity.created_at
     } satisfies Book;
   }
 
-  static fromDtoToInsertEntity(dto: CreateBookDTO): BookInsert {
+  static fromDtoToInsertEntity(dto: CreateBookDTO): BookEntityInsert {
     return {
       title: dto.title,
       author: dto.author
-    } satisfies BookInsert;
+    } satisfies BookEntityInsert;
   }
 
-  static fromDtoToUpdateEntity(dto: UpdateBookDTO): BookUpdate {
+  static fromDtoToUpdateEntity(dto: UpdateBookDTO): BookEntityUpdate {
     return {
       title: dto.title,
       author: dto.author
-    } satisfies BookUpdate;
+    } satisfies BookEntityUpdate;
   }
 }
