@@ -145,22 +145,9 @@ flowchart LR
 | CI/CD      | Push/PR to main | Lint, type-check, test, build                  |
 | Runtime    | Production      | Sentry error tracking & performance monitoring |
 
-## AI-Assisted Development (`.claude/`)
+## AI Usage
 
-This project includes a `.claude/` configuration folder that enables **engineering-grade AI assistance** via [Claude Code](https://docs.anthropic.com/en/docs/claude-code). It encodes the project's coding standards, architectural patterns, and workflows so the AI follows the same rules a senior engineer would.
-
-### What It Provides
-
-- **Scoped rules** — Coding conventions activate only on relevant file types (e.g., Svelte standards apply to `*.svelte` files, TypeScript standards to `*.ts` files)
-- **Custom skills** — Reusable prompts for common workflows (e.g., `plan-feature` generates an engineering checklist before writing code)
-- **Post-edit hooks** — Automated ESLint runs after every file edit, catching issues immediately
-- **Project instructions (`CLAUDE.md`)** — A top-level file that gives the AI full context on the architecture, libraries, and quality pipeline
-
-### How to Use
-
-1. Install [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
-2. Open the project — Claude Code automatically reads `CLAUDE.md` and `.claude/`
-3. Ask it to build features, fix bugs, or refactor — it will follow the project's standards
+When working with this repository using an AI assistant, instruct the AI to read the `/docs` folder at the start of each session to understand the project's architecture, standards, and patterns.
 
 ## Getting Started
 
