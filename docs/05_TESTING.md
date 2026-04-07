@@ -26,7 +26,18 @@ Tests require a running local Supabase instance. Install and start it:
 npx supabase start
 ```
 
-The `.env.e2e` file contains the well-known default local Supabase credentials and is loaded automatically by Playwright.
+After starting Supabase, generate the `.env.e2e` file with the local credentials:
+
+```bash
+# Generate .env.e2e from running Supabase instance
+API_URL=$(npx supabase status -o env | grep API_URL | cut -d= -f2-)
+ANON_KEY=$(npx supabase status -o env | grep ANON_KEY | cut -d= -f2-)
+SERVICE_KEY=$(npx supabase status -o env | grep SERVICE_ROLE_KEY | cut -d= -f2-)
+printf "PUBLIC_SUPABASE_URL=%s\nPUBLIC_SUPABASE_ANON_KEY=%s\nSUPABASE_URL=%s\nSUPABASE_SERVICE_ROLE_KEY=%s\n" \
+  "$API_URL" "$ANON_KEY" "$API_URL" "$SERVICE_KEY" > .env.e2e
+```
+
+This file is gitignored and loaded automatically by Playwright.
 
 ## Configuration
 
@@ -101,6 +112,7 @@ export const monocartReporter = new MonocartReporter({
 ```ts
 // e2e/_shared/fixtures/supawright.ts
 import { withSupawright } from 'supawright';
+
 import type { Database } from '../../../src/lib/domain/types/database.types';
 
 export const supaTest = withSupawright<Database, 'public'>(['public'], {
@@ -206,6 +218,7 @@ All tests import `test` and `expect` from `app-fixtures.ts` instead of Playwrigh
 ```ts
 // e2e/_shared/app-fixtures.ts
 import { mergeTests } from '@playwright/test';
+
 import { supaTest } from './fixtures/supawright';
 
 const test = mergeTests(coverageTest, supaTest);
@@ -268,8 +281,13 @@ The GitHub Actions workflow starts a local Supabase instance and runs tests agai
 - name: Start Supabase
   run: supabase start -x imgproxy,edge-runtime,logflare,vector,pgbouncer
 
-- name: Create .env from .env.e2e
-  run: cp .env.e2e .env
+- name: Generate .env.e2e from local Supabase
+  run: |
+    API_URL=$(supabase status -o env | grep API_URL | cut -d= -f2-)
+    ANON_KEY=$(supabase status -o env | grep ANON_KEY | cut -d= -f2-)
+    SERVICE_KEY=$(supabase status -o env | grep SERVICE_ROLE_KEY | cut -d= -f2-)
+    printf "PUBLIC_SUPABASE_URL=%s\n..." \
+      "$API_URL" "$ANON_KEY" "$API_URL" "$SERVICE_KEY" > .env.e2e
 
 - name: Run E2E tests
   run: pnpm test
@@ -279,7 +297,7 @@ The GitHub Actions workflow starts a local Supabase instance and runs tests agai
 
 - Installs Supabase CLI and starts local instance (excluding unused services for speed)
 - Migrations from `supabase/migrations/` are applied automatically on start
-- Uses `.env.e2e` for deterministic local Supabase credentials
+- Generates `.env.e2e` from `supabase status` output (no committed credentials)
 - Installs Chromium with system dependencies
 - Runs tests with 2 retries for flaky tests
 - Uploads coverage as `test-report` artifact (7-day retention)
