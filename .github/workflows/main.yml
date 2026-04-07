@@ -63,6 +63,12 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start Supabase
+        run: supabase start -x imgproxy,edge-runtime,logflare,vector,pgbouncer
       - name: Get Playwright version
         id: playwright-version
         run: echo "version=$(pnpm list @playwright/test --depth=0 --json | jq -r '.[0].devDependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
@@ -78,8 +84,8 @@ jobs:
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
-      - name: Create .env from .env.dist
-        run: cp .env.dist .env
+      - name: Create .env from .env.e2e
+        run: cp .env.e2e .env
       - name: Run E2E tests
         run: pnpm test
       - name: Upload test report
