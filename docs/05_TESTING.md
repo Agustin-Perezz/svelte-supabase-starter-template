@@ -26,18 +26,18 @@ Tests require a running local Supabase instance. Install and start it:
 npx supabase start
 ```
 
-After starting Supabase, generate the `.env.e2e` file with the local credentials:
+### Environment Variables
 
-```bash
-# Generate .env.e2e from running Supabase instance
-API_URL=$(npx supabase status -o env | grep API_URL | cut -d= -f2-)
-ANON_KEY=$(npx supabase status -o env | grep ANON_KEY | cut -d= -f2-)
-SERVICE_KEY=$(npx supabase status -o env | grep SERVICE_ROLE_KEY | cut -d= -f2-)
-printf "PUBLIC_SUPABASE_URL=%s\nPUBLIC_SUPABASE_ANON_KEY=%s\nSUPABASE_URL=%s\nSUPABASE_SERVICE_ROLE_KEY=%s\n" \
-  "$API_URL" "$ANON_KEY" "$API_URL" "$SERVICE_KEY" > .env.e2e
+The `.env.test` file contains the local Supabase credentials and is committed to the repo (these are well-known default keys for local development — not secrets):
+
+```env
+SUPABASE_URL=http://127.0.0.1:54321
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+PUBLIC_SUPABASE_ANON_KEY=eyJ...
 ```
 
-This file is gitignored and loaded automatically by Playwright.
+This file is loaded automatically by Playwright via `dotenv`.
 
 ## Configuration
 
@@ -45,9 +45,10 @@ This file is gitignored and loaded automatically by Playwright.
 
 ```ts
 // playwright.config.ts
-import { config } from 'dotenv';
+import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
 
-config({ path: '.env.e2e' });
+dotenv.config({ path: '.env.test' });
 
 export default defineConfig({
   testDir: 'e2e',
@@ -75,7 +76,7 @@ export default defineConfig({
 - CI retries flaky tests twice with single worker
 - Auto-starts preview server on port 4173
 - Traces captured only on retried tests
-- `.env.e2e` is loaded for Supabase credentials
+- `.env.test` is loaded for Supabase credentials
 
 ### Monocart Reporter
 
@@ -237,14 +238,17 @@ export { test, expect };
 
 ## Running Tests
 
-| Command                     | Description                  |
-| --------------------------- | ---------------------------- |
-| `pnpm test`                 | Run E2E tests                |
-| `pnpm test:e2e`             | Run E2E tests (alias)        |
-| `pnpm test:show-report`     | Open Monocart HTML report    |
-| `pnpm coverage:show-report` | Open V8 coverage HTML report |
+| Command                     | Description                                  |
+| --------------------------- | -------------------------------------------- |
+| `pnpm test`                 | Reset database and run E2E tests             |
+| `pnpm test:ui`              | Reset database and run E2E tests in UI mode  |
+| `pnpm test:ci`              | Run E2E tests only (no db reset, used in CI) |
+| `pnpm test:show-report`     | Open Monocart HTML report                    |
+| `pnpm coverage:show-report` | Open V8 coverage HTML report                 |
 
 **Prerequisite:** Local Supabase must be running (`npx supabase start`).
+
+The `test` and `test:ui` scripts run `npx supabase db reset` before tests to ensure a clean database state. The `test:ci` script skips the reset since CI starts a fresh Supabase instance.
 
 ## Coverage Reports
 
@@ -266,7 +270,7 @@ Reports are generated in `coverage/e2e/`:
 pnpm test
 ```
 
-The full E2E test suite runs before every push. This ensures no untested code reaches the remote.
+The full E2E test suite runs before every push (including a database reset). This ensures no untested code reaches the remote.
 
 ## CI Pipeline
 
@@ -281,24 +285,24 @@ The GitHub Actions workflow starts a local Supabase instance and runs tests agai
 - name: Start Supabase
   run: supabase start -x imgproxy,edge-runtime,logflare,vector,pgbouncer
 
-- name: Generate .env.e2e from local Supabase
+- name: Generate .env.test for Playwright
   run: |
-    API_URL=$(supabase status -o env | grep API_URL | cut -d= -f2-)
-    ANON_KEY=$(supabase status -o env | grep ANON_KEY | cut -d= -f2-)
-    SERVICE_KEY=$(supabase status -o env | grep SERVICE_ROLE_KEY | cut -d= -f2-)
-    printf "PUBLIC_SUPABASE_URL=%s\n..." \
-      "$API_URL" "$ANON_KEY" "$API_URL" "$SERVICE_KEY" > .env.e2e
+    echo "SUPABASE_URL=$(supabase status -o env | grep API_URL | cut -d= -f2-)" >> .env.test
+    echo "SUPABASE_SERVICE_ROLE_KEY=$(supabase status -o env | grep SERVICE_ROLE_KEY | cut -d= -f2-)" >> .env.test
+    echo "PUBLIC_SUPABASE_URL=$(supabase status -o env | grep API_URL | cut -d= -f2-)" >> .env.test
+    echo "PUBLIC_SUPABASE_ANON_KEY=$(supabase status -o env | grep ANON_KEY | cut -d= -f2-)" >> .env.test
 
 - name: Run E2E tests
-  run: pnpm test
+  run: pnpm test:ci
 ```
 
 **CI behavior:**
 
 - Installs Supabase CLI and starts local instance (excluding unused services for speed)
 - Migrations from `supabase/migrations/` are applied automatically on start
-- Generates `.env.e2e` from `supabase status` output (no committed credentials)
+- Generates `.env.test` from `supabase status` output (overrides committed defaults if needed)
 - Installs Chromium with system dependencies
+- Runs `pnpm test:ci` (no database reset — fresh instance is already clean)
 - Runs tests with 2 retries for flaky tests
 - Uploads coverage as `test-report` artifact (7-day retention)
 - Uploads Playwright traces on failure as `playwright-traces` artifact
