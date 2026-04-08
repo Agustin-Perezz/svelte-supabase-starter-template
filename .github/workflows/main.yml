@@ -84,15 +84,14 @@ jobs:
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
-      - name: Generate .env.e2e from local Supabase
+      - name: Generate .env.test for Playwright
         run: |
-          API_URL=$(supabase status -o env | grep API_URL | cut -d= -f2-)
-          ANON_KEY=$(supabase status -o env | grep ANON_KEY | cut -d= -f2-)
-          SERVICE_KEY=$(supabase status -o env | grep SERVICE_ROLE_KEY | cut -d= -f2-)
-          printf "PUBLIC_SUPABASE_URL=%s\nPUBLIC_SUPABASE_ANON_KEY=%s\nSUPABASE_URL=%s\nSUPABASE_SERVICE_ROLE_KEY=%s\n" \
-            "$API_URL" "$ANON_KEY" "$API_URL" "$SERVICE_KEY" > .env.e2e
+          echo "SUPABASE_URL=$(supabase status -o env | grep API_URL | cut -d= -f2-)" >> .env.test
+          echo "SUPABASE_SERVICE_ROLE_KEY=$(supabase status -o env | grep SERVICE_ROLE_KEY | cut -d= -f2-)" >> .env.test
+          echo "PUBLIC_SUPABASE_URL=$(supabase status -o env | grep API_URL | cut -d= -f2-)" >> .env.test
+          echo "PUBLIC_SUPABASE_ANON_KEY=$(supabase status -o env | grep ANON_KEY | cut -d= -f2-)" >> .env.test
       - name: Run E2E tests
-        run: pnpm test
+        run: pnpm test:ci
       - name: Upload test report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4

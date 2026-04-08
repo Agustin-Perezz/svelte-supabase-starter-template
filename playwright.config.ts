@@ -1,9 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
-import { config } from 'dotenv';
+import dotenv from 'dotenv';
 
 import { monocartReporter } from './playwright.monocart-reporter';
 
-config({ path: '.env.e2e' });
+dotenv.config({ path: '.env.test' });
 
 export default defineConfig({
   testDir: 'e2e',

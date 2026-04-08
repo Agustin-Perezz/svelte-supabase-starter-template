@@ -1,35 +1,41 @@
 import { expect, test } from './_shared/app-fixtures';
 
-test('supawright creates and cleans up a book record', async ({
-  supawright
-}) => {
-  const book = await supawright.create('books', {
+test('books page shows seeded books', async ({ page, supawright }) => {
+  await supawright.create('books', {
     title: 'The Pragmatic Programmer',
     author: 'David Thomas'
   });
 
-  expect(book.id).toBeDefined();
-  expect(book.title).toBe('The Pragmatic Programmer');
-  expect(book.author).toBe('David Thomas');
-  expect(book.created_at).toBeDefined();
+  await page.goto('/books');
 
-  const { data } = await supawright
-    .supabase('public')
-    .from('books')
-    .select()
-    .eq('id', book.id)
-    .single();
-
-  expect(data).not.toBeNull();
-  expect(data!.title).toBe('The Pragmatic Programmer');
+  await expect(page.getByText('The Pragmatic Programmer')).toBeVisible();
+  await expect(page.getByText('David Thomas')).toBeVisible();
 });
 
-test('supawright auto-generates missing fields', async ({ supawright }) => {
-  const book = await supawright.create('books', {
-    title: 'Test Book'
+test('can create a book from the UI', async ({ page, supawright: _ }) => {
+  await page.goto('/books');
+
+  await page.getByPlaceholder('Title').fill('E2E Created Book');
+  await page.getByPlaceholder('Author').fill('Test Author');
+  await page.getByRole('button', { name: 'Add' }).click();
+
+  await expect(
+    page.getByRole('listitem').filter({ hasText: 'E2E Created Book' })
+  ).toBeVisible();
+});
+
+test('can delete a book from the UI', async ({ page, supawright }) => {
+  await supawright.create('books', {
+    title: 'Book to Delete',
+    author: 'Some Author'
   });
 
-  expect(book.title).toBe('Test Book');
-  expect(book.author).toBeDefined();
-  expect(book.author.length).toBeGreaterThan(0);
+  await page.goto('/books');
+
+  const row = page.getByRole('listitem').filter({ hasText: 'Book to Delete' });
+  await expect(row).toBeVisible();
+
+  await row.getByRole('button', { name: 'Delete' }).click();
+
+  await expect(row).not.toBeVisible();
 });
