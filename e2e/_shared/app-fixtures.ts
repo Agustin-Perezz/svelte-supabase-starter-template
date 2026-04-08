@@ -1,16 +1,16 @@
-import { test as base, expect } from '@playwright/test';
+import { test as base, expect, mergeTests } from '@playwright/test';
 
+import { supaTest } from './fixtures/supawright';
 import {
   collectV8Coverage,
   stopV8CoverageAndReport
 } from './fixtures/v8-code-coverage';
 
-const enableJsCoverage = true;
-const enableCssCoverage = true;
-
-const test = base.extend({
+const coverageTest = base.extend({
   page: async ({ page }, use, testInfo) => {
     const isChromium = testInfo.project.name === 'chromium';
+    const enableJsCoverage = true;
+    const enableCssCoverage = true;
 
     if (isChromium) {
       await collectV8Coverage(page, testInfo, {
@@ -29,5 +29,7 @@ const test = base.extend({
     }
   }
 });
+
+const test = mergeTests(coverageTest, supaTest);
 
 export { test, expect };

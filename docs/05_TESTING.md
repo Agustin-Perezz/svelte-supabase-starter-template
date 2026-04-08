@@ -1,17 +1,43 @@
 # Testing Guide
 
-This project uses Playwright for end-to-end testing with V8 code coverage collection and Monocart Reporter for reporting.
+This project uses Playwright for end-to-end testing with V8 code coverage collection, Monocart Reporter for reporting, and [Supawright](https://github.com/isaacharrisholt/supawright) for Supabase test data management.
 
 ## Test Structure
 
 ```
 e2e/
 ├── _shared/
-│   ├── app-fixtures.ts              # Custom test fixtures with coverage
+│   ├── app-fixtures.ts              # Custom test fixtures (coverage + supawright)
 │   └── fixtures/
+│       ├── supawright.ts            # Supawright fixture for Supabase test data
 │       └── v8-code-coverage.ts      # V8 coverage collection utilities
-└── demo.test.ts                     # Example test
+├── books.test.ts                    # Books e2e tests (supawright example)
+└── demo.test.ts                     # Basic smoke test
 ```
+
+## Prerequisites
+
+### Local Supabase
+
+Tests require a running local Supabase instance. Install and start it:
+
+```bash
+# Start local Supabase (migrations run automatically)
+npx supabase start
+```
+
+After starting Supabase, generate the `.env.e2e` file with the local credentials:
+
+```bash
+# Generate .env.e2e from running Supabase instance
+API_URL=$(npx supabase status -o env | grep API_URL | cut -d= -f2-)
+ANON_KEY=$(npx supabase status -o env | grep ANON_KEY | cut -d= -f2-)
+SERVICE_KEY=$(npx supabase status -o env | grep SERVICE_ROLE_KEY | cut -d= -f2-)
+printf "PUBLIC_SUPABASE_URL=%s\nPUBLIC_SUPABASE_ANON_KEY=%s\nSUPABASE_URL=%s\nSUPABASE_SERVICE_ROLE_KEY=%s\n" \
+  "$API_URL" "$ANON_KEY" "$API_URL" "$SERVICE_KEY" > .env.e2e
+```
+
+This file is gitignored and loaded automatically by Playwright.
 
 ## Configuration
 
@@ -19,6 +45,10 @@ e2e/
 
 ```ts
 // playwright.config.ts
+import { config } from 'dotenv';
+
+config({ path: '.env.e2e' });
+
 export default defineConfig({
   testDir: 'e2e',
   fullyParallel: true,
@@ -45,6 +75,7 @@ export default defineConfig({
 - CI retries flaky tests twice with single worker
 - Auto-starts preview server on port 4173
 - Traces captured only on retried tests
+- `.env.e2e` is loaded for Supabase credentials
 
 ### Monocart Reporter
 
@@ -70,6 +101,87 @@ export const monocartReporter = new MonocartReporter({
     !sourcePath.includes('@sveltejs') &&
     !sourcePath.includes('svelte/internal')
 });
+```
+
+## Supawright (Test Data Management)
+
+[Supawright](https://github.com/isaacharrisholt/supawright) manages database records during tests — creating test data with auto-generated values and cleaning up after each test.
+
+### Fixture Setup
+
+```ts
+// e2e/_shared/fixtures/supawright.ts
+import { withSupawright } from 'supawright';
+
+import type { Database } from '../../../src/lib/domain/types/database.types';
+
+export const supaTest = withSupawright<Database, 'public'>(['public'], {
+  supabase: {
+    supabaseUrl: process.env.SUPABASE_URL ?? 'http://127.0.0.1:54321',
+    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
+  },
+  database: {
+    host: '127.0.0.1',
+    port: 54322,
+    user: 'postgres',
+    password: 'postgres',
+    database: 'postgres'
+  }
+});
+```
+
+The fixture is merged with the V8 coverage fixture in `app-fixtures.ts` using Playwright's `mergeTests`.
+
+### Creating Test Data
+
+```ts
+import { expect, test } from './_shared/app-fixtures';
+
+test('creates a book', async ({ supawright }) => {
+  // Create with explicit data
+  const book = await supawright.create('books', {
+    title: 'My Book',
+    author: 'Author Name'
+  });
+  expect(book.id).toBeDefined();
+
+  // Create with auto-generated data (non-nullable fields filled automatically)
+  const autoBook = await supawright.create('books', { title: 'Only Title' });
+  expect(autoBook.author).toBeDefined(); // auto-generated
+});
+```
+
+### Querying via Supabase Client
+
+```ts
+test('query records', async ({ supawright }) => {
+  const book = await supawright.create('books', { title: 'Test' });
+
+  const { data } = await supawright
+    .supabase('public')
+    .from('books')
+    .select()
+    .eq('id', book.id)
+    .single();
+
+  expect(data!.title).toBe('Test');
+});
+```
+
+### Automatic Cleanup
+
+Supawright automatically deletes all records created during a test when it finishes — respecting foreign key constraints. It also discovers and removes related records created via the standard Supabase client.
+
+### Generating Database Types
+
+When the database schema changes, regenerate the TypeScript types:
+
+```bash
+# From local Supabase
+pnpm supabase:gen-types:local
+
+# From remote Supabase (requires SUPABASE_PROJECT_ID)
+pnpm supabase:gen-types
 ```
 
 ## Coverage Collection
@@ -101,41 +213,19 @@ export async function stopV8CoverageAndReport(
 
 ### Custom Test Fixture
 
+All tests import `test` and `expect` from `app-fixtures.ts` instead of Playwright directly. The fixture merges V8 coverage collection with the supawright harness:
+
 ```ts
 // e2e/_shared/app-fixtures.ts
-export const test = base.extend<{}, { workerIndex: number }>({
-  workerIndex: [
-    async ({}, use, workerInfo) => {
-      await use(workerInfo.workerIndex);
-    },
-    { scope: 'worker', auto: true }
-  ]
-});
+import { mergeTests } from '@playwright/test';
 
-test.beforeEach(async ({ page }) => {
-  await collectV8Coverage({ page });
-});
+import { supaTest } from './fixtures/supawright';
 
-test.afterEach(async ({ page }, testInfo) => {
-  await stopV8CoverageAndReport({ page }, testInfo);
-});
+const test = mergeTests(coverageTest, supaTest);
+export { test, expect };
 ```
-
-All tests import `test` and `expect` from `app-fixtures.ts` instead of Playwright directly.
 
 ## Writing Tests
-
-### Example Test
-
-```ts
-// e2e/demo.test.ts
-import { expect, test } from './_shared/app-fixtures';
-
-test('home page has heading', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.locator('h1')).toBeVisible();
-});
-```
 
 ### Best Practices
 
@@ -143,6 +233,7 @@ test('home page has heading', async ({ page }) => {
 2. **Use data-testid** — Prefer `data-testid` attributes for stable selectors
 3. **Test user flows** — Focus on complete user journeys, not implementation details
 4. **Use assertions** — Leverage Playwright's auto-retrying assertions (`toBeVisible`, `toHaveText`)
+5. **Use supawright for data** — Create test data via `supawright.create()` instead of manual inserts; cleanup is automatic
 
 ## Running Tests
 
@@ -152,6 +243,8 @@ test('home page has heading', async ({ page }) => {
 | `pnpm test:e2e`             | Run E2E tests (alias)        |
 | `pnpm test:show-report`     | Open Monocart HTML report    |
 | `pnpm coverage:show-report` | Open V8 coverage HTML report |
+
+**Prerequisite:** Local Supabase must be running (`npx supabase start`).
 
 ## Coverage Reports
 
@@ -177,25 +270,34 @@ The full E2E test suite runs before every push. This ensures no untested code re
 
 ## CI Pipeline
 
-The GitHub Actions workflow runs tests in CI:
+The GitHub Actions workflow starts a local Supabase instance and runs tests against it:
 
 ```yaml
-- name: Install Playwright browsers
-  run: pnpm exec playwright install --with-deps chromium
-
-- name: Run Playwright tests
-  run: pnpm test
-
-- name: Upload test report
-  uses: actions/upload-artifact@v4
+- name: Setup Supabase CLI
+  uses: supabase/setup-cli@v1
   with:
-    name: test-report
-    path: coverage/e2e/
-    retention-days: 7
+    version: latest
+
+- name: Start Supabase
+  run: supabase start -x imgproxy,edge-runtime,logflare,vector,pgbouncer
+
+- name: Generate .env.e2e from local Supabase
+  run: |
+    API_URL=$(supabase status -o env | grep API_URL | cut -d= -f2-)
+    ANON_KEY=$(supabase status -o env | grep ANON_KEY | cut -d= -f2-)
+    SERVICE_KEY=$(supabase status -o env | grep SERVICE_ROLE_KEY | cut -d= -f2-)
+    printf "PUBLIC_SUPABASE_URL=%s\n..." \
+      "$API_URL" "$ANON_KEY" "$API_URL" "$SERVICE_KEY" > .env.e2e
+
+- name: Run E2E tests
+  run: pnpm test
 ```
 
 **CI behavior:**
 
+- Installs Supabase CLI and starts local instance (excluding unused services for speed)
+- Migrations from `supabase/migrations/` are applied automatically on start
+- Generates `.env.e2e` from `supabase status` output (no committed credentials)
 - Installs Chromium with system dependencies
 - Runs tests with 2 retries for flaky tests
 - Uploads coverage as `test-report` artifact (7-day retention)
