@@ -238,13 +238,13 @@ export { test, expect };
 
 ## Running Tests
 
-| Command                     | Description                                      |
-| --------------------------- | ------------------------------------------------ |
-| `pnpm test`                 | Reset database and run E2E tests                 |
-| `pnpm test:ui`              | Reset database and run E2E tests in UI mode      |
-| `pnpm test:ci`              | Run E2E tests only (no db reset, used in CI)     |
-| `pnpm test:show-report`     | Open Monocart HTML report                        |
-| `pnpm coverage:show-report` | Open V8 coverage HTML report                     |
+| Command                     | Description                                  |
+| --------------------------- | -------------------------------------------- |
+| `pnpm test`                 | Reset database and run E2E tests             |
+| `pnpm test:ui`              | Reset database and run E2E tests in UI mode  |
+| `pnpm test:ci`              | Run E2E tests only (no db reset, used in CI) |
+| `pnpm test:show-report`     | Open Monocart HTML report                    |
+| `pnpm coverage:show-report` | Open V8 coverage HTML report                 |
 
 **Prerequisite:** Local Supabase must be running (`npx supabase start`).
 
