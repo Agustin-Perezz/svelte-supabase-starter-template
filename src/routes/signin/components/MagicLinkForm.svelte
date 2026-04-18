@@ -43,11 +43,17 @@
     name="email"
     placeholder="vos@ejemplo.com"
     type="email"
+    data-testid="email-input"
     bind:value={$formData.email}
     error={$errors.email ? String($errors.email) : undefined}
   />
 
-  <Button type="submit" disabled={$submitting} class="w-full gap-2">
+  <Button
+    type="submit"
+    disabled={$submitting}
+    class="w-full gap-2"
+    data-testid="magic-link-submit"
+  >
     {#if $submitting}
       <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
         <circle
