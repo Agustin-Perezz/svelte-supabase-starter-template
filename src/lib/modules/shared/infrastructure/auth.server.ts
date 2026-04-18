@@ -3,19 +3,23 @@ import type { RequestEvent } from '@sveltejs/kit';
 export type User = {
   id: string;
   email: string;
-  name: string;
+  name?: string;
 };
 
-export function authenticateUser(event: RequestEvent): User | null {
-  const token = event.cookies.get('auth_token');
+export async function authenticateUser(
+  event: RequestEvent
+): Promise<User | null> {
+  const {
+    data: { user }
+  } = await event.locals.supabase.auth.getUser();
 
-  if (!token) {
+  if (!user) {
     return null;
   }
 
   return {
-    id: '1',
-    email: 'user@example.com',
-    name: 'Mock User'
+    id: user.id,
+    email: user.email!,
+    name: user.user_metadata?.full_name ?? user.user_metadata?.name
   };
 }

@@ -40,11 +40,11 @@ const supabaseHandle: Handle = async ({ event, resolve }) => {
 };
 
 const authHandle: Handle = async ({ event, resolve }) => {
-  event.locals.user = authenticateUser(event);
+  event.locals.user = await authenticateUser(event);
 
   if (event.url.pathname.startsWith('/protected')) {
     if (!event.locals.user) {
-      throw redirect(303, '/');
+      throw redirect(303, '/signin');
     }
   }
 
