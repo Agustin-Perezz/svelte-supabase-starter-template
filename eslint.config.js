@@ -25,11 +25,15 @@ export default ts.config(
       'no-undef': 'off',
       'no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_|^[A-Z]',
+          caughtErrorsIgnorePattern: '^_'
+        }
       ],
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' }
+        { argsIgnorePattern: '^_', ignoreRestSiblings: true }
       ],
       'no-eval': 'error',
       'no-new': 'error',

@@ -20,7 +20,7 @@ test('can create a book from the UI', async ({ page, supawright: _ }) => {
   await page.getByRole('button', { name: 'Add' }).click();
 
   await expect(
-    page.getByRole('listitem').filter({ hasText: 'E2E Created Book' })
+    page.getByRole('listitem').filter({ hasText: 'E2E Created Book' }).first()
   ).toBeVisible();
 });
 
