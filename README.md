@@ -1,6 +1,6 @@
 # Svelte Supabase Starter Template
 
-A production-ready SvelteKit starter template with Supabase backend, following clean architecture and shift-left quality practices. Catch bugs early, ship with confidence.
+A production-ready SvelteKit starter template with Supabase, following Clean Architecture and shift-left quality practices. Catch bugs early, ship with confidence.
 
 ## Documentation
 
