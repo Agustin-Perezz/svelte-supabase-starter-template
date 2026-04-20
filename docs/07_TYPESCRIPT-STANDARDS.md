@@ -34,7 +34,22 @@ type ButtonHandler = ReturnType<typeof createHandler>;
 
 - **`any` is forbidden** — use `unknown` with type guards
 - **Use `satisfies`** instead of explicit annotations when you need both validation and inference
-- **No magic strings** — use `enum` or `const` maps for finite named sets
+- **No magic strings** — model finite named sets as a TypeScript `enum` in `src/lib/modules/shared/constants/`. Prefer `enum` over `as const` object maps; pair with derived `readonly` arrays for subsets:
+
+  ```ts
+  export enum OrderStatus {
+    Pending = 'pending',
+    Preparing = 'preparing',
+    OutForDelivery = 'out_for_delivery',
+    Delivered = 'delivered'
+  }
+
+  export const ACTIVE_ORDER_STATUSES: readonly OrderStatus[] = [
+    OrderStatus.Pending,
+    OrderStatus.Preparing,
+    OrderStatus.OutForDelivery
+  ];
+  ```
 
 ## Coding Conventions
 
