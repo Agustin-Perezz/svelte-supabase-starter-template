@@ -95,6 +95,13 @@ export class Book {
 
 ### 2. Use Cases Layer (`useCases/{use-case}/`)
 
+Each use case does **one** thing and exposes a single `execute` method. If you find yourself adding a second public method (`getInitial` + `applyChange`, `update` + `subscribe`, etc.), split it into a second use case folder. Typical split for read + realtime features:
+
+- `manage-{thing}/` — fetch + apply business rules (filtering, sorting, validation)
+- `watch-{thing}/` — subscribe to realtime changes and emit payloads
+- `update-{thing}/` — use case for only update
+- `get-{thing}/` — use case for only get one thing
+
 Each use case has its own folder with four files:
 
 ```ts
@@ -289,6 +296,15 @@ export class SupabaseCreateAuthorRepository implements ICreateAuthorRepository {
   }
 }
 ```
+
+## Use-Case Responsibility Rule
+
+Each use case does **one** thing and exposes a single `execute` method. If you find yourself adding a second public method (`getInitial` + `applyChange`, `load` + `subscribe`, etc.), split it into a second use case folder. Typical split for read + realtime features:
+
+- `manage-{thing}/` — fetch + apply business rules (filtering, sorting, validation)
+- `watch-{thing}/` — subscribe to realtime changes and emit payloads
+
+Both use cases share a single repository interface when appropriate (e.g. `IOrderRepository` exposing both `findActive` and `subscribeToChanges`).
 
 ### 6. Container + Route
 
