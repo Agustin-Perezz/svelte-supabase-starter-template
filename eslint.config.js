@@ -23,14 +23,7 @@ export default ts.config(
     },
     rules: {
       'no-undef': 'off',
-      'no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_|^[A-Z]',
-          caughtErrorsIgnorePattern: '^_'
-        }
-      ],
+      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', ignoreRestSiblings: true }
@@ -42,7 +35,11 @@ export default ts.config(
       '@typescript-eslint/no-explicit-any': 'error',
       complexity: ['error', 10],
       'max-depth': ['error', 3],
-      'max-params': ['error', 3]
+      'max-params': ['error', 3],
+      '@typescript-eslint/parameter-properties': [
+        'error',
+        { prefer: 'parameter-property' }
+      ]
     }
   },
   {
