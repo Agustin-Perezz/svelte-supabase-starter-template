@@ -1,39 +1,29 @@
 # Svelte Supabase Starter Template
 
-A production-ready SvelteKit starter template with Supabase backend, following clean architecture and shift-left quality practices. Catch bugs early, ship with confidence.
-
-## Philosophy
-
-This template embraces the **shift-left** methodology — integrating quality gates at every stage of development rather than catching issues in production. Every commit is linted, every push is tested, and every merge is validated through CI/CD.
-
-**Fail fast, fix early.**
+A production-ready SvelteKit starter template with Supabase backend, clean architecture, and shift-left quality practices.
 
 ## Architecture Overview
 
 ```mermaid
 graph TB
-    subgraph Client["Browser Client"]
+    subgraph Client["Browser"]
         UI["Svelte 5 Components"]
         Forms["superforms + Zod"]
     end
-
     subgraph SvelteKit["SvelteKit App"]
         Routes["+page.svelte / +layout.svelte"]
         Server["+page.server.ts"]
         Hooks["hooks.server.ts"]
     end
-
     subgraph Modules["Feature Modules (src/lib/modules/)"]
-        Domain["domain/ — Entities, Interfaces, Schemas"]
+        Domain["domain/ — Entities, Interfaces"]
         UseCases["useCases/ — Application logic"]
-        Infra["infrastructure/ — Repositories, Mappers"]
+        Infra["infrastructure/ — Repositories, Entities"]
     end
-
-    subgraph Supabase["Supabase Backend"]
+    subgraph Supabase["Supabase"]
         Auth["Auth / OAuth"]
         DB["PostgreSQL + RLS"]
     end
-
     UI --> Routes
     Forms --> Routes
     Routes --> Server
@@ -46,175 +36,77 @@ graph TB
     Hooks --> DB
 ```
 
-See [Architecture Overview](./01_ARCHITECTURE.md) for detailed diagrams and patterns.
-
-## Main Scripts
-
-| Script                          | Description                                    |
-| ------------------------------- | ---------------------------------------------- |
-| `pnpm dev`                      | Start development server with Vite             |
-| `pnpm build`                    | Build production bundle                        |
-| `pnpm preview`                  | Preview production build locally               |
-| `pnpm check`                    | Run TypeScript type checking                   |
-| `pnpm check:watch`              | Run type checking in watch mode                |
-| `pnpm format`                   | Format code with Prettier                      |
-| `pnpm lint`                     | Run Prettier check + ESLint                    |
-| `pnpm test`                     | Run Playwright E2E tests                       |
-| `pnpm test:show-report`         | Open Monocart HTML test report                 |
-| `pnpm coverage:show-report`     | Open V8 coverage HTML report                   |
-| `pnpm supabase:gen-types`       | Generate TypeScript types from remote Supabase |
-| `pnpm supabase:gen-types:local` | Generate TypeScript types from local Supabase  |
-| `pnpm prepare`                  | Install Husky git hooks                        |
-
 ## Documentation
 
-| Document                                             | Description                                            |
-| ---------------------------------------------------- | ------------------------------------------------------ |
-| [Architecture Overview](./01_ARCHITECTURE.md)        | Detailed architecture and design patterns              |
-| [Svelte Standards](./02_SVELTE-STANDARDS.md)         | Svelte 5 patterns, SOLID principles, and form handling |
-| [Routing & Pages](./03_ROUTING-PAGES.md)             | File-based routing and page patterns                   |
-| [Supabase Guide](./04_SUPABASE-GUIDE.md)             | Database integration and clean architecture layers     |
-| [Testing Guide](./05_TESTING.md)                     | E2E testing with Playwright and V8 coverage            |
-| [UI Components](./06_UI-COMPONENTS.md)               | Component architecture and styling system              |
-| [TypeScript Standards](./07_TYPESCRIPT-STANDARDS.md) | TypeScript conventions and coding rules                |
+| Document | Description |
+| --- | --- |
+| [Architecture Overview](./01_ARCHITECTURE.md) | Detailed architecture and design patterns |
+| [Svelte Standards](./02_SVELTE-STANDARDS.md) | Svelte 5 patterns, SOLID principles, and form handling |
+| [Routing & Pages](./03_ROUTING-PAGES.md) | File-based routing and page patterns |
+| [Supabase Guide](./04_SUPABASE-GUIDE.md) | Database integration and clean architecture layers |
+| [Testing Guide](./05_TESTING.md) | E2E testing with Playwright and V8 coverage |
+| [UI Components](./06_UI-COMPONENTS.md) | Component architecture and styling system |
+| [TypeScript Standards](./07_TYPESCRIPT-STANDARDS.md) | TypeScript conventions and coding rules |
+
+## Scripts
+
+| Script | Description |
+| --- | --- |
+| `pnpm dev` | Start development server |
+| `pnpm build` | Build production bundle |
+| `pnpm preview` | Preview production build locally |
+| `pnpm check` | TypeScript type checking |
+| `pnpm check:watch` | Type checking in watch mode |
+| `pnpm format` | Format with Prettier |
+| `pnpm lint` | Prettier check + ESLint |
+| `pnpm test` | Run Playwright E2E tests |
+| `pnpm test:show-report` | Open Monocart HTML report |
+| `pnpm coverage:show-report` | Open V8 coverage report |
+| `pnpm supabase:gen-types` | Generate types from remote Supabase |
+| `pnpm supabase:gen-types:local` | Generate types from local Supabase |
 
 ## Path Aliases
 
-| Alias           | Path                   | Purpose                                            |
-| --------------- | ---------------------- | -------------------------------------------------- |
-| `$lib`          | `src/lib`              | Base library alias (SvelteKit default)             |
-| `$components/*` | `src/lib/components/*` | Reusable UI components                             |
-| `$modules/*`    | `src/lib/modules/*`    | Feature modules (domain, infrastructure, useCases) |
+| Alias | Path | Purpose |
+| --- | --- | --- |
+| `$lib` | `src/lib` | Base library alias |
+| `$components/*` | `src/lib/components/*` | Reusable UI components |
+| `$modules/*` | `src/lib/modules/*` | Feature modules |
 
 ## Technology Stack
 
-### Core
+**Core:** SvelteKit 2, Svelte 5 (Runes), TypeScript (strict), Vite
 
-- SvelteKit 2 — Full-stack framework with file-based routing
-- Svelte 5 — Component framework using Runes API (`$state`, `$derived`, `$effect`)
-- TypeScript — Strict mode with bundler module resolution
-- Vite — Build tool and dev server
+**Backend:** Supabase (Postgres + RLS), `@supabase/ssr`, Drizzle ORM
 
-### Backend
+**UI:** Tailwind CSS v4, Bits UI, Tailwind Variants, Lucide Svelte
 
-- Supabase — Postgres database with Row Level Security
-- @supabase/ssr — SSR-compatible Supabase client
-- Axios — HTTP client for external API calls
+**Forms:** Zod v4, sveltekit-superforms
 
-### UI & Styling
+**Quality:** ESLint, Prettier, Playwright, Monocart Reporter, Husky, lint-staged
 
-- Tailwind CSS v4 — Utility-first CSS framework with Vite plugin
-- Bits UI — Headless component primitives
-- Tailwind Variants — Component variant composition
-- Tailwind Merge — Class conflict resolution (`cn()`)
-- Lucide Svelte — Icon library
-
-### Forms & Validation
-
-- Zod v4 — Schema validation
-- sveltekit-superforms — Form state management with Zod integration
-
-### Quality & Testing
-
-- ESLint — Code linting with TypeScript, Svelte, and Prettier compatibility
-- Prettier — Code formatting with import sorting and Tailwind class sorting
-- Playwright — End-to-end testing with V8 code coverage
-- Monocart Reporter — Coverage reporting (HTML, LCOV, Cobertura)
-- Husky — Git hooks (pre-commit, pre-push)
-- lint-staged — Staged file linting
-
-### Observability
-
-- Sentry — Error tracking, performance monitoring, and session replay
+**Observability:** Sentry
 
 ## Quality Gates
 
-```mermaid
-flowchart LR
-    Code --> PreCommit["Pre-commit: lint-staged"]
-    PreCommit --> PrePush["Pre-push: E2E tests + Coverage"]
-    PrePush --> CI["CI Pipeline"]
-    CI --> Sentry["Sentry Monitoring"]
-    CI --> Deploy
-```
-
-| Stage      | Trigger         | Actions                                        |
-| ---------- | --------------- | ---------------------------------------------- |
-| Pre-commit | `git commit`    | Prettier + ESLint on staged files              |
-| Pre-push   | `git push`      | Full Playwright E2E test suite with coverage   |
-| CI/CD      | Push/PR to main | Lint, type-check, test, build                  |
-| Runtime    | Production      | Sentry error tracking & performance monitoring |
-
-## AI Usage
-
-When working with this repository using an AI assistant, instruct the AI to read the `/docs` folder at the start of each session to understand the project's architecture, standards, and patterns.
-
-## Getting Started
-
-Install dependencies:
-
-```bash
-pnpm install
-```
-
-Start the development server:
-
-```bash
-pnpm dev
-```
-
-Build for production:
-
-```bash
-pnpm build
-```
-
-Preview the production build:
-
-```bash
-pnpm preview
-```
-
-## Code Coverage
-
-E2E tests collect V8 code coverage using Playwright's built-in coverage API and Monocart Reporter.
-
-**Report Formats**
-
-| Format        | Path                                                   |
-| ------------- | ------------------------------------------------------ |
-| V8 HTML       | `./coverage/e2e/v8/index.html`                         |
-| Monocart HTML | `./coverage/e2e/monocart-report.html`                  |
-| LCOV          | `./coverage/e2e/lcov/code-coverage.lcov.info`          |
-| Cobertura XML | `./coverage/e2e/cobertura/code-coverage.cobertura.xml` |
+| Stage | Trigger | Actions |
+| --- | --- | --- |
+| Pre-commit | `git commit` | Prettier + ESLint on staged files |
+| Pre-push | `git push` | Full Playwright E2E suite with coverage |
+| CI/CD | Push/PR to main | Lint, type-check, test, build |
+| Runtime | Production | Sentry error tracking |
 
 ## Environment Variables
 
-Copy `.env.dist` to `.env` and fill in the values:
+Copy `.env.dist` to `.env`:
 
 ```
-# Supabase
 PUBLIC_SUPABASE_URL=your-supabase-project-url
 PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-
-# API
 VITE_API_BASE_URL=your-base-api
-
-# Sentry
 VITE_SENTRY_DSN=your-sentry-dsn
 SENTRY_DSN=your-sentry-dsn
 SENTRY_ORG=your-sentry-org
 SENTRY_PROJECT=your-sentry-project
 SENTRY_AUTH_TOKEN=your-sentry-auth-token
 ```
-
-## CI/CD Pipeline
-
-GitHub Actions workflow triggers on push and pull requests to main:
-
-1. Install dependencies (pnpm)
-2. Run linter and formatter checks
-3. Run TypeScript type checks
-4. Install Playwright browsers
-5. Execute E2E test suite
-6. Build the application
