@@ -4,7 +4,6 @@ import type { Database } from '$modules/shared/domain/database.types';
 import { OAuthProvider } from '../domain/AuthSchemas';
 
 export class SupabaseAuthRepository {
-  // eslint-disable-next-line no-unused-vars
   constructor(private supabase: SupabaseClient<Database>) {}
 
   async signInWithOtp(email: string, emailRedirectTo: string): Promise<void> {
