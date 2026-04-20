@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { User } from '@lucide/svelte';
   import { Card } from '$components/ui/card';
 
   import MagicLinkForm from './components/MagicLinkForm.svelte';
@@ -15,19 +16,7 @@
       <div
         class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-black shadow-lg"
       >
-        <svg
-          class="h-7 w-7 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-          />
-        </svg>
+        <User class="h-7 w-7 text-white" />
       </div>
       <h1 class="text-3xl font-bold tracking-tight text-gray-900">
         Bienvenido
