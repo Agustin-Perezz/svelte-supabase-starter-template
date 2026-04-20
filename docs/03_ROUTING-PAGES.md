@@ -19,11 +19,11 @@ src/routes/
 
 ## Routes
 
-| Route | Path | Description |
-| --- | --- | --- |
-| `src/routes/+page.svelte` | `/` | Home page |
-| `src/routes/protected/` | `/protected` | Auth-guarded page |
-| `src/routes/books/` | `/books` | Books interface |
+| Route                     | Path         | Description       |
+| ------------------------- | ------------ | ----------------- |
+| `src/routes/+page.svelte` | `/`          | Home page         |
+| `src/routes/protected/`   | `/protected` | Auth-guarded page |
+| `src/routes/books/`       | `/books`     | Books interface   |
 
 ## Layout
 
@@ -79,6 +79,7 @@ Pages follow a decomposition:
 <!-- +page.svelte -->
 <script lang="ts">
   import BookCreateForm from './components/BookCreateForm.svelte';
+
   const { data } = $props();
 </script>
 
@@ -105,9 +106,9 @@ const authHandle: Handle = async ({ event, resolve }) => {
 
 ```svelte
 <script lang="ts">
+  import { createBookRequestSchema } from '$modules/books/useCases/create-book/create-book.request.dto';
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
-  import { createBookRequestSchema } from '$modules/books/useCases/create-book/create-book.request.dto';
 
   let { createForm }: Props = $props();
   const { form, errors, message, enhance } = superForm(createForm, {

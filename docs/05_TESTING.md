@@ -28,6 +28,7 @@ The `.env.test` file contains local credentials and is committed (well-known dev
 ## Configuration
 
 Key Playwright settings:
+
 - Tests run on Desktop Chrome only
 - CI: 2 retries, single worker
 - Auto-starts preview server on port 4173
@@ -52,6 +53,7 @@ test('shows created book', async ({ page, supawright }) => {
 ```ts
 // e2e/_shared/fixtures/supawright.ts
 import { withSupawright } from 'supawright';
+
 import type { Database } from '../../src/lib/modules/shared/domain/database.types';
 
 export const supaTest = withSupawright<Database, 'public'>(['public'], {
@@ -59,7 +61,13 @@ export const supaTest = withSupawright<Database, 'public'>(['public'], {
     supabaseUrl: process.env.SUPABASE_URL ?? 'http://127.0.0.1:54321',
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
   },
-  database: { host: '127.0.0.1', port: 54322, user: 'postgres', password: 'postgres', database: 'postgres' }
+  database: {
+    host: '127.0.0.1',
+    port: 54322,
+    user: 'postgres',
+    password: 'postgres',
+    database: 'postgres'
+  }
 });
 ```
 
@@ -74,21 +82,21 @@ All tests import `test` and `expect` from `app-fixtures.ts` (not directly from P
 
 ## Running Tests
 
-| Command | Description |
-| --- | --- |
-| `pnpm test` | Reset DB + run E2E tests |
-| `pnpm test:ui` | Reset DB + run in UI mode |
-| `pnpm test:ci` | Run only (no DB reset, used in CI) |
-| `pnpm test:show-report` | Open Monocart HTML report |
-| `pnpm coverage:show-report` | Open V8 coverage report |
+| Command                     | Description                        |
+| --------------------------- | ---------------------------------- |
+| `pnpm test`                 | Reset DB + run E2E tests           |
+| `pnpm test:ui`              | Reset DB + run in UI mode          |
+| `pnpm test:ci`              | Run only (no DB reset, used in CI) |
+| `pnpm test:show-report`     | Open Monocart HTML report          |
+| `pnpm coverage:show-report` | Open V8 coverage report            |
 
 ## Coverage Reports
 
-| Format | Path |
-| --- | --- |
-| Monocart HTML | `./coverage/e2e/monocart-report.html` |
-| V8 HTML | `./coverage/e2e/v8/index.html` |
-| LCOV | `./coverage/e2e/lcov/code-coverage.lcov.info` |
+| Format        | Path                                                   |
+| ------------- | ------------------------------------------------------ |
+| Monocart HTML | `./coverage/e2e/monocart-report.html`                  |
+| V8 HTML       | `./coverage/e2e/v8/index.html`                         |
+| LCOV          | `./coverage/e2e/lcov/code-coverage.lcov.info`          |
 | Cobertura XML | `./coverage/e2e/cobertura/code-coverage.cobertura.xml` |
 
 ## CI Pipeline

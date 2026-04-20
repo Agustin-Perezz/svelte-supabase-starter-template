@@ -70,9 +70,11 @@ Use `$bindable()` only when two-way binding is strictly necessary.
 ## SOLID Principles
 
 ### Single Responsibility
+
 Each component does one thing. See [Routing & Pages](./03_ROUTING-PAGES.md#page-component-pattern) for page decomposition.
 
 ### Open/Closed
+
 Use snippets to let consumers extend component UI without modifying source:
 
 ```ts
@@ -83,6 +85,7 @@ interface Props {
 ```
 
 ### Liskov Substitution
+
 Wrapper components must accept and spread all standard HTML attributes:
 
 ```ts
@@ -94,17 +97,25 @@ interface Props extends HTMLButtonAttributes {
 ```
 
 ### Interface Segregation
+
 Pass only the specific props a component needs:
 
 ```ts
 // GOOD — only what's needed
-interface Props { title: string; author: string; onDelete: (id: string) => void; }
+interface Props {
+  title: string;
+  author: string;
+  onDelete: (id: string) => void;
+}
 
 // BAD — entire object when only 2 fields needed
-interface Props { book: Book; }
+interface Props {
+  book: Book;
+}
 ```
 
 ### Dependency Inversion
+
 Use `getContext`/`setContext` to inject dependencies:
 
 ```ts
@@ -116,6 +127,7 @@ In server code, use the container:
 
 ```ts
 import { createBooksContainer } from '$modules/books/books.container';
+
 const { create } = createBooksContainer(locals.supabase);
 ```
 

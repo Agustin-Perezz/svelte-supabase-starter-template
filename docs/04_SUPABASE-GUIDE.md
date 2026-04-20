@@ -5,21 +5,26 @@
 The Supabase client is created per-request in `hooks.server.ts` via `@supabase/ssr`:
 
 ```ts
-event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-  cookies: { getAll, setAll }
-});
+event.locals.supabase = createServerClient(
+  PUBLIC_SUPABASE_URL,
+  PUBLIC_SUPABASE_ANON_KEY,
+  {
+    cookies: { getAll, setAll }
+  }
+);
 ```
 
 **Rules:**
+
 - NEVER create a global/singleton Supabase client
 - NEVER import `createClient` from `@supabase/supabase-js` in server code
 - Credentials come from env vars — never hardcoded
 
 ## Environment Variables
 
-| Variable | Purpose |
-| --- | --- |
-| `PUBLIC_SUPABASE_URL` | Supabase project URL |
+| Variable                   | Purpose                |
+| -------------------------- | ---------------------- |
+| `PUBLIC_SUPABASE_URL`      | Supabase project URL   |
 | `PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
 
 ## Database Migrations
@@ -49,8 +54,16 @@ Pure TypeScript — no framework or DB dependencies.
 
 ```ts
 // domain/Book.ts
-export interface CreateBookParams { title: string; author: string; }
-export interface ReconstructBookParams { id: string; title: string; author: string; createdAt: Date; }
+export interface CreateBookParams {
+  title: string;
+  author: string;
+}
+export interface ReconstructBookParams {
+  id: string;
+  title: string;
+  author: string;
+  createdAt: Date;
+}
 
 export class Book {
   private constructor(
@@ -68,9 +81,15 @@ export class Book {
     return new Book(params.id, params.title, params.author, params.createdAt);
   }
 
-  get id() { return this._id; }
-  get title() { return this._title; }
-  get createdAt() { return this._createdAt; }
+  get id() {
+    return this._id;
+  }
+  get title() {
+    return this._title;
+  }
+  get createdAt() {
+    return this._createdAt;
+  }
 }
 ```
 
@@ -104,6 +123,7 @@ export class CreateBookUseCase {
 ```
 
 **Rules:**
+
 - Accept repository interfaces via constructor (never concrete implementations)
 - NEVER import `@supabase/supabase-js` or `@supabase/ssr`
 - One use case per folder, one `execute` method per use case
@@ -115,6 +135,7 @@ export class CreateBookUseCase {
 ```ts
 // infrastructure/entities/book.entity.ts
 import type { Database } from '$modules/shared/domain/database.types';
+
 export type BookEntity = Database['public']['Tables']['books']['Row'];
 ```
 
@@ -147,6 +168,7 @@ export class SupabaseCreateBookRepository implements ICreateBookRepository {
 ```
 
 **Rules:**
+
 - Accept `SupabaseClient<Database>` via constructor
 - Always call `.select()` after `.insert()` / `.update()`
 - Always check `{ data, error }` and throw on error
@@ -207,12 +229,20 @@ export class Author {
     return new Author('', params.name.trim(), new Date());
   }
 
-  static reconstruct(params: { id: string; name: string; createdAt: Date }): Author {
+  static reconstruct(params: {
+    id: string;
+    name: string;
+    createdAt: Date;
+  }): Author {
     return new Author(params.id, params.name, params.createdAt);
   }
 
-  get id() { return this._id; }
-  get name() { return this._name; }
+  get id() {
+    return this._id;
+  }
+  get name() {
+    return this._name;
+  }
 }
 ```
 
@@ -242,13 +272,20 @@ export class SupabaseCreateAuthorRepository implements ICreateAuthorRepository {
 
   async create(author: Author): Promise<Author> {
     const { data, error } = await this.supabase
-      .from('authors').insert({ name: author.name }).select().single();
+      .from('authors')
+      .insert({ name: author.name })
+      .select()
+      .single();
     if (error) throw error;
     return this.toDomain(data);
   }
 
   private toDomain(row: AuthorEntity): Author {
-    return Author.reconstruct({ id: row.id, name: row.name, createdAt: new Date(row.created_at) });
+    return Author.reconstruct({
+      id: row.id,
+      name: row.name,
+      createdAt: new Date(row.created_at)
+    });
   }
 }
 ```
@@ -258,7 +295,11 @@ export class SupabaseCreateAuthorRepository implements ICreateAuthorRepository {
 ```ts
 // modules/authors/authors.container.ts
 export function createAuthorsContainer(supabase: SupabaseClient<Database>) {
-  return { create: new CreateAuthorUseCase(new SupabaseCreateAuthorRepository(supabase)) };
+  return {
+    create: new CreateAuthorUseCase(
+      new SupabaseCreateAuthorRepository(supabase)
+    )
+  };
 }
 
 // routes/authors/+page.server.ts

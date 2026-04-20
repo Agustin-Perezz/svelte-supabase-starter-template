@@ -34,13 +34,13 @@ src/lib/modules/
 
 ## Layer Responsibilities
 
-| Layer | Location | Responsibility |
-| --- | --- | --- |
-| **Domain** | `domain/` | Entity classes with business rules, no framework deps |
-| **Use Cases** | `useCases/{use-case}/` | Application logic, one class per use case |
-| **Infrastructure** | `infrastructure/` | Supabase repos with `toDomain` mappers, DB entity types |
-| **Container** | `{feature}.container.ts` | Wires use cases with concrete repositories |
-| **Route** | `src/routes/` | SvelteKit load functions and form actions |
+| Layer              | Location                 | Responsibility                                          |
+| ------------------ | ------------------------ | ------------------------------------------------------- |
+| **Domain**         | `domain/`                | Entity classes with business rules, no framework deps   |
+| **Use Cases**      | `useCases/{use-case}/`   | Application logic, one class per use case               |
+| **Infrastructure** | `infrastructure/`        | Supabase repos with `toDomain` mappers, DB entity types |
+| **Container**      | `{feature}.container.ts` | Wires use cases with concrete repositories              |
+| **Route**          | `src/routes/`            | SvelteKit load functions and form actions               |
 
 ## Dependency Rules
 
