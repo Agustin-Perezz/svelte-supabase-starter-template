@@ -70,22 +70,48 @@ Named actions are invoked via the form's `action` attribute: `?/create`, `?/upda
 
 ## Page Component Pattern
 
-Pages follow a decomposition:
+Pages are strictly decomposed into small, single-responsibility components. This is non-negotiable.
 
-1. **Sub-components** (`components/`) — Small, focused (~50 lines max)
-2. **Page orchestration** (`+page.svelte`) — Pure composition, no inline logic
+### Rules
+
+- **50-line hard limit per component** — no exceptions, no `// TODO: split later`
+- **`+page.svelte` is composition-only** — it imports and arranges components, nothing else. No logic, no inline styles, no conditionals beyond prop-passing
+- **One concern per file** — a form component does not contain a list; a list does not contain a modal
+- **If it scrolls, split it** — if you need to scroll to read a component, it must be broken up
+
+When a component approaches 40 lines, split it proactively — do not wait until it hits 50.
+
+### Structure
+
+```
+src/routes/productos/
+├── +page.svelte                  # Composition only — imports + arranges
+├── +page.server.ts               # Load functions & actions
+└── components/
+    ├── ProductHeader.svelte       # Page title, description, action buttons
+    ├── ProductList.svelte         # Iterates products, delegates to card
+    ├── ProductEmptyState.svelte   # Empty list message/CTA
+    ├── ProductCard.svelte         # Single product display
+    ├── ProductCreateForm.svelte   # Superform wiring + enhance
+    └── ProductFormFields.svelte   # Input fields only, no <form> tag
+```
+
+### Example
 
 ```svelte
-<!-- +page.svelte -->
+<!-- +page.svelte — composition only, zero logic -->
 <script lang="ts">
-  import BookCreateForm from './components/BookCreateForm.svelte';
+  import ProductCreateForm from './components/ProductCreateForm.svelte';
+  import ProductHeader from './components/ProductHeader.svelte';
+  import ProductList from './components/ProductList.svelte';
 
   const { data } = $props();
 </script>
 
 <main>
-  <h1>Books</h1>
-  <BookCreateForm createForm={data.createForm} />
+  <ProductHeader />
+  <ProductCreateForm createForm={data.createForm} />
+  <ProductList products={data.products} />
 </main>
 ```
 
