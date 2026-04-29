@@ -50,7 +50,7 @@ export type FileDropZoneRootProps = FileDropZoneRootPropsWithoutHTML &
 
 export type FileDropZoneTriggerPropsWithoutHTML = WithChildren<
   WithElementRef<object>
->;  
+>;
 
 export type FileDropZoneTriggerProps = FileDropZoneTriggerPropsWithoutHTML &
   Omit<HTMLLabelAttributes, 'for'>;
