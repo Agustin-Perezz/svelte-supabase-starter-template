@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CircleCheck, Loader2 } from '@lucide/svelte';
+  import { CircleCheck, LoaderCircle } from '@lucide/svelte';
   import { Button } from '$components/ui/button';
   import { FormField } from '$components/ui/form-field';
   import { magicLinkSchema } from '$modules/auth/domain/AuthSchemas';
@@ -46,7 +46,7 @@
     data-testid="magic-link-submit"
   >
     {#if $submitting}
-      <Loader2 class="h-4 w-4 animate-spin" />
+      <LoaderCircle class="h-4 w-4 animate-spin" />
       Enviando...
     {:else}
       Enviar Magic Link
