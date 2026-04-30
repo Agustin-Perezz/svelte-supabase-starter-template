@@ -3,9 +3,9 @@ import * as Sentry from '@sentry/sveltekit';
 import { createServerClient } from '@supabase/ssr';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { authenticateUser } from '$modules/shared/infrastructure/auth.server';
 
 import { NodeEnv } from '$lib/env';
+import { authenticateUser } from '$lib/shared/infrastructure/auth.server';
 
 Sentry.init({
   enabled: process.env.NODE_ENV === NodeEnv.Production,
