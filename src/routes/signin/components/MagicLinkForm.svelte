@@ -2,7 +2,7 @@
   import { CircleCheck, LoaderCircle } from '@lucide/svelte';
   import { Button } from '$components/ui/button';
   import { FormField } from '$components/ui/form-field';
-  import { magicLinkSchema } from '$modules/auth/domain/AuthSchemas';
+  import { magicLinkSchema } from '$domain/entities/auth-schemas';
   import { superForm } from 'sveltekit-superforms';
   import { zod4Client as zodClient } from 'sveltekit-superforms/adapters';
 
