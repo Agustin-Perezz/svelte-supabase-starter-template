@@ -11,7 +11,7 @@ export class CreateBookUseCase {
   constructor(private readonly repository: ICreateBookRepository) {}
 
   async execute(dto: CreateBookRequestDto): Promise<CreateBookResponseDto> {
-    const book = Book.create({ title: dto.title, author: dto.author });
+    const book = Book.create(dto);
     const saved = await this.repository.create(book);
     return toCreateBookResponseDto(saved);
   }
