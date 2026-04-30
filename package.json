@@ -76,6 +76,9 @@
     "*.{js,ts,svelte,css}": [
       "prettier --write",
       "eslint --fix"
+    ],
+    "*.md": [
+      "prettier --write"
     ]
   },
   "dependencies": {
