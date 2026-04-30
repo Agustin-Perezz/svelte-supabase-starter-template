@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { createBookRequestSchema as bookCreateSchema } from '$application/use-cases/books/create-book/create-book.request.dto';
   import { FormField } from '$components/ui/form-field';
-  import { createBookRequestSchema as bookCreateSchema } from '$modules/books/useCases/create-book/create-book.request.dto';
   import {
     superForm,
     type Infer,

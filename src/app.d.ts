@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$modules/shared/domain/database.types';
+
+import type { Database } from '$lib/shared/domain/database.types';
 
 declare global {
   namespace App {

@@ -15,25 +15,32 @@ graph TB
         Server["+page.server.ts"]
         Hooks["hooks.server.ts"]
     end
-    subgraph Modules["Feature Modules (src/lib/modules/)"]
-        Domain["domain/ — Entities, Interfaces"]
-        UseCases["useCases/ — Application logic"]
-        Infra["infrastructure/ — Repositories, Entities"]
+    subgraph Domain["src/domain/"]
+        Entities["entities/ — Domain entities and errors"]
+    end
+    subgraph Application["src/application/"]
+        UseCases["use-cases/ — Application logic"]
+    end
+    subgraph Infrastructure["src/infrastructure/"]
+        DB["database/postgres/ — Repositories, DB entities"]
+    end
+    subgraph Lib["src/lib/"]
+        Containers["containers/ — DI wiring"]
+        Shared["shared/ — Auth, storage utilities"]
     end
     subgraph Supabase["Supabase"]
         Auth["Auth / OAuth"]
-        DB["PostgreSQL + RLS"]
+        DB2["PostgreSQL + RLS"]
     end
     UI --> Routes
     Forms --> Routes
     Routes --> Server
     Server --> UseCases
-    UseCases --> Domain
-    UseCases --> Infra
-    Infra --> Domain
-    Infra --> DB
-    Hooks --> Auth
-    Hooks --> DB
+    UseCases --> Entities
+    UseCases --> Infrastructure
+    Infrastructure --> Entities
+    Infrastructure --> DB2
+    Lib --> Supabase
 ```
 
 ## Documentation
@@ -66,11 +73,14 @@ graph TB
 
 ## Path Aliases
 
-| Alias           | Path                   | Purpose                |
-| --------------- | ---------------------- | ---------------------- |
-| `$lib`          | `src/lib`              | Base library alias     |
-| `$components/*` | `src/lib/components/*` | Reusable UI components |
-| `$modules/*`    | `src/lib/modules/*`    | Feature modules        |
+| Alias               | Path                   | Purpose                |
+| ------------------- | ---------------------- | ---------------------- |
+| `$lib`              | `src/lib`              | Base library alias     |
+| `$lib/shared/*`     | `src/lib/shared/*`     | Shared utilities       |
+| `$components/*`     | `src/lib/components/*` | Reusable UI components |
+| `$domain/*`         | `src/domain/*`         | Domain entities        |
+| `$application/*`    | `src/application/*`    | Application use cases  |
+| `$infrastructure/*` | `src/infrastructure/*` | Infrastructure layer   |
 
 ## Technology Stack
 

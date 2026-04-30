@@ -1,10 +1,10 @@
 import { fail } from '@sveltejs/kit';
-import { createBooksContainer } from '$modules/books/books.container';
-import { createBookRequestSchema } from '$modules/books/useCases/create-book/create-book.request.dto';
-import { updateBookRequestSchema } from '$modules/books/useCases/update-book/update-book.request.dto';
+import { createBookRequestSchema } from '$application/use-cases/books/create-book/create-book.request.dto';
+import { updateBookRequestSchema } from '$application/use-cases/books/update-book/update-book.request.dto';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 as zod } from 'sveltekit-superforms/adapters';
 
+import { createBooksContainer } from '$lib/containers/books.container';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {

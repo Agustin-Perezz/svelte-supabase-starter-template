@@ -1,24 +1,11 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { fail, redirect, type Actions } from '@sveltejs/kit';
-import {
-  magicLinkSchema,
-  OAuthProvider
-} from '$modules/auth/domain/AuthSchemas';
-import { SupabaseAuthRepository } from '$modules/auth/infrastructure/SupabaseAuthRepository.server';
-import { SignInWithMagicLink } from '$modules/auth/useCases/SignInWithMagicLink';
-import { SignInWithOAuth } from '$modules/auth/useCases/SignInWithOAuth';
-import type { Database } from '$modules/shared/domain/database.types';
+import { magicLinkSchema } from '$domain/entities/auth-schemas';
+import { OAuthProvider } from '$domain/entities/oauth-provider.enum';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 as zod } from 'sveltekit-superforms/adapters';
 
+import { createAuthContainer } from '$lib/containers/auth.container';
 import type { PageServerLoad } from './$types';
-
-function createAuthServices(supabase: SupabaseClient<Database>, url: URL) {
-  return {
-    repo: new SupabaseAuthRepository(supabase),
-    redirectUrl: `${url.origin}/auth/callback`
-  };
-}
 
 export const load: PageServerLoad = async (event) => {
   if (event.locals.user) {
@@ -39,9 +26,11 @@ export const actions: Actions = {
     }
 
     try {
-      const { repo, redirectUrl } = createAuthServices(supabase, url);
-      const useCase = new SignInWithMagicLink(repo);
-      await useCase.execute(form.data.email, redirectUrl);
+      const { signInWithMagicLink } = createAuthContainer(supabase);
+      await signInWithMagicLink.execute(
+        form.data,
+        `${url.origin}/auth/callback`
+      );
       return message(form, 'Check your email for the sign-in link.');
     } catch (error) {
       return message(
@@ -54,9 +43,11 @@ export const actions: Actions = {
 
   google: async ({ locals: { supabase }, url }) => {
     try {
-      const { repo, redirectUrl } = createAuthServices(supabase, url);
-      const useCase = new SignInWithOAuth(repo);
-      const oauthUrl = await useCase.execute(OAuthProvider.Google, redirectUrl);
+      const { signInWithOAuth } = createAuthContainer(supabase);
+      const oauthUrl = await signInWithOAuth.execute(
+        OAuthProvider.Google,
+        `${url.origin}/auth/callback`
+      );
       throw redirect(303, oauthUrl);
     } catch (error) {
       if (error instanceof Error && error.message.includes('303')) {
@@ -68,11 +59,10 @@ export const actions: Actions = {
 
   facebook: async ({ locals: { supabase }, url }) => {
     try {
-      const { repo, redirectUrl } = createAuthServices(supabase, url);
-      const useCase = new SignInWithOAuth(repo);
-      const oauthUrl = await useCase.execute(
+      const { signInWithOAuth } = createAuthContainer(supabase);
+      const oauthUrl = await signInWithOAuth.execute(
         OAuthProvider.Facebook,
-        redirectUrl
+        `${url.origin}/auth/callback`
       );
       throw redirect(303, oauthUrl);
     } catch (error) {
