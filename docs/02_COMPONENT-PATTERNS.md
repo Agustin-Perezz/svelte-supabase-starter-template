@@ -50,13 +50,13 @@ Use `$effect` only for side effects (DOM, third-party libs).
 ```ts
 enum ButtonVariant {
   Default = 'default',
-  Destructive = 'destructive',
+  Destructive = 'destructive'
 }
 
 enum ButtonSize {
   Sm = 'sm',
   Md = 'md',
-  Lg = 'lg',
+  Lg = 'lg'
 }
 
 interface Props {
