@@ -38,15 +38,14 @@ graph TB
 
 ## Documentation
 
-| Document                                             | Description                                            |
-| ---------------------------------------------------- | ------------------------------------------------------ |
-| [Architecture Overview](./01_ARCHITECTURE.md)        | Detailed architecture and design patterns              |
-| [Svelte Standards](./02_SVELTE-STANDARDS.md)         | Svelte 5 patterns, SOLID principles, and form handling |
-| [Routing & Pages](./03_ROUTING-PAGES.md)             | File-based routing and page patterns                   |
-| [Supabase Guide](./04_SUPABASE-GUIDE.md)             | Database integration and clean architecture layers     |
-| [Testing Guide](./05_TESTING.md)                     | E2E testing with Playwright and V8 coverage            |
-| [UI Components](./06_UI-COMPONENTS.md)               | Component architecture and styling system              |
-| [TypeScript Standards](./07_TYPESCRIPT-STANDARDS.md) | TypeScript conventions and coding rules                |
+| Document                                                       | Description                                        |
+| -------------------------------------------------------------- | -------------------------------------------------- |
+| [Architecture Overview](./01_ARCHITECTURE.md)                  | Detailed architecture and design patterns          |
+| [Component Patterns](./02_COMPONENT-PATTERNS.md)               | Svelte 5 runes, SOLID, and component coding rules  |
+| [Frontend Folder Structure](./03_FRONTEND-FOLDER-STRUCTURE.md) | Route folder layout and naming conventions         |
+| [Supabase Guide](./04_SUPABASE-GUIDE.md)                       | Database integration and clean architecture layers |
+| [Testing Guide](./05_TESTING.md)                               | E2E testing with Playwright and V8 coverage        |
+| [TypeScript Standards](./07_TYPESCRIPT-STANDARDS.md)           | TypeScript conventions and coding rules            |
 
 ## Scripts
 
