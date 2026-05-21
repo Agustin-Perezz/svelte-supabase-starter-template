@@ -1,23 +1,6 @@
-export interface BookProperties {
-  id: string;
-  title: string;
-  author: string;
-  createdAt: Date;
-}
+export type CreateBookParams = Omit<ReconstructBookParams, 'id' | 'createdAt'>;
 
-export interface CreateBookParams {
-  title: string;
-  author: string;
-}
-
-export interface ReconstructBookParams {
-  id: string;
-  title: string;
-  author: string;
-  createdAt: Date;
-}
-
-type BookConstructorParams = {
+export type ReconstructBookParams = {
   id: string;
   title: string;
   author: string;
@@ -25,7 +8,7 @@ type BookConstructorParams = {
 };
 
 export class Book {
-  private constructor(private readonly _props: BookConstructorParams) {}
+  private constructor(private readonly _props: ReconstructBookParams) {}
 
   static create(params: CreateBookParams): Book {
     return new Book({
@@ -68,4 +51,5 @@ export class Book {
   }
 }
 
-export type BookDTO = ReturnType<Book['toJSON']>;
+export type BookDto = ReturnType<Book['toJSON']>;
+export type TBook = BookDto;

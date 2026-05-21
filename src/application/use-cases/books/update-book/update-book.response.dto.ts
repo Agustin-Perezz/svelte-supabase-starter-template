@@ -1,6 +1,6 @@
-import type { Book, BookDTO } from '$domain/entities/book.entity';
+import type { Book, BookDto } from '$domain/entities/book.entity';
 
-export type UpdateBookResponseDto = BookDTO;
+export type UpdateBookResponseDto = BookDto;
 
 export function toUpdateBookResponseDto(book: Book): UpdateBookResponseDto {
   return book.toJSON();
