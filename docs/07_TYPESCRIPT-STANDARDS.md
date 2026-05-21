@@ -20,6 +20,24 @@ function assertString(val: unknown): asserts val is string {
 }
 ```
 
+## Type vs Interface
+
+Use `type` by default. Only use `interface` when you need declaration merging or extending:
+
+```ts
+// BAD — interface used when type suffices
+interface CreateBookParams {
+  title: string;
+  author: string;
+}
+
+// GOOD — type as the default
+export type CreateBookParams = {
+  title: string;
+  author: string;
+};
+```
+
 ## Utility Types
 
 Prefer built-in utilities to keep types DRY:

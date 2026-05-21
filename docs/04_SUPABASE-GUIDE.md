@@ -52,43 +52,61 @@ Pure TypeScript — no framework or DB dependencies.
 
 ```ts
 // src/domain/entities/book.entity.ts
-export interface CreateBookParams {
-  title: string;
-  author: string;
-}
-export interface ReconstructBookParams {
+export type ReconstructBookParams = {
   id: string;
   title: string;
   author: string;
   createdAt: Date;
-}
+};
+
+export type CreateBookParams = Omit<ReconstructBookParams, 'id' | 'createdAt'>;
 
 export class Book {
-  private constructor(
-    private readonly _id: string,
-    private _title: string,
-    private _author: string,
-    private readonly _createdAt: Date
-  ) {}
+  private constructor(private readonly _props: ReconstructBookParams) {}
 
   static create(params: CreateBookParams): Book {
-    return new Book('', params.title.trim(), params.author.trim(), new Date());
+    return new Book({
+      id: '',
+      title: params.title.trim(),
+      author: params.author.trim(),
+      createdAt: new Date()
+    });
   }
 
   static reconstruct(params: ReconstructBookParams): Book {
-    return new Book(params.id, params.title, params.author, params.createdAt);
+    return new Book({
+      id: params.id,
+      title: params.title,
+      author: params.author,
+      createdAt: params.createdAt
+    });
   }
 
   get id() {
-    return this._id;
+    return this._props.id;
   }
   get title() {
-    return this._title;
+    return this._props.title;
+  }
+  get author() {
+    return this._props.author;
   }
   get createdAt() {
-    return this._createdAt;
+    return this._props.createdAt;
+  }
+
+  toJSON() {
+    return {
+      id: this._props.id,
+      title: this._props.title,
+      author: this._props.author,
+      createdAt: this._props.createdAt.toISOString()
+    };
   }
 }
+
+export type BookDto = ReturnType<Book['toJSON']>;
+export type TBook = BookDto;
 ```
 
 ### 2. Application Layer (`src/application/use-cases/`)
@@ -254,32 +272,57 @@ pnpm supabase:gen-types
 
 ```ts
 // src/domain/entities/author.entity.ts
-export class Author {
-  private constructor(
-    private readonly _id: string,
-    private _name: string,
-    private readonly _createdAt: Date
-  ) {}
+export type ReconstructAuthorParams = {
+  id: string;
+  name: string;
+  createdAt: Date;
+};
 
-  static create(params: { name: string }): Author {
-    return new Author('', params.name.trim(), new Date());
+export type CreateAuthorParams = Omit<
+  ReconstructAuthorParams,
+  'id' | 'createdAt'
+>;
+
+export class Author {
+  private constructor(private readonly _props: ReconstructAuthorParams) {}
+
+  static create(params: CreateAuthorParams): Author {
+    return new Author({
+      id: '',
+      name: params.name.trim(),
+      createdAt: new Date()
+    });
   }
 
-  static reconstruct(params: {
-    id: string;
-    name: string;
-    createdAt: Date;
-  }): Author {
-    return new Author(params.id, params.name, params.createdAt);
+  static reconstruct(params: ReconstructAuthorParams): Author {
+    return new Author({
+      id: params.id,
+      name: params.name,
+      createdAt: params.createdAt
+    });
   }
 
   get id() {
-    return this._id;
+    return this._props.id;
   }
   get name() {
-    return this._name;
+    return this._props.name;
+  }
+  get createdAt() {
+    return this._props.createdAt;
+  }
+
+  toJSON() {
+    return {
+      id: this._props.id,
+      name: this._props.name,
+      createdAt: this._props.createdAt.toISOString()
+    };
   }
 }
+
+export type AuthorDto = ReturnType<Author['toJSON']>;
+export type TAuthor = AuthorDto;
 ```
 
 ### 4. Use case
